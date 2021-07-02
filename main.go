@@ -5,7 +5,7 @@ import (
 	"log"
 	"regexp"
 
-	s "./schema"
+	schema "./schema"
 )
 
 type Tag struct {
@@ -196,7 +196,9 @@ func Parse(text string, title string, regex []RegexTag, num int) Output {
 
 func main() {
 
-	log.Println(s.Test())
+	// log.Println([]schema.Config{})
+
+	schema.Test()
 
 	file, err := ioutil.ReadFile("input.txt")
 
