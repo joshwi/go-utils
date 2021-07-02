@@ -1,5 +1,7 @@
 package schema
 
+import "log"
+
 type Tag struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
@@ -77,4 +79,8 @@ var WIKI_MOVIE = []Config{
 			{Name: "", Value: "<td[^>]+>(?P<length>(\\d+)).minutes.*?<\\/td>"},
 		},
 	},
+}
+
+func Test() {
+	log.Println("test")
 }
