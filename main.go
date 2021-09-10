@@ -1,11 +1,10 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"regexp"
 
-	schema "./schema"
+	utils "./utils"
 )
 
 type Tag struct {
@@ -198,19 +197,23 @@ func main() {
 
 	// log.Println([]schema.Config{})
 
-	schema.Test()
+	// schema.Test()
 
-	file, err := ioutil.ReadFile("input.txt")
+	// file, err := ioutil.ReadFile("input.txt")
 
-	if err != nil {
-		log.Println(err)
-	}
+	// if err != nil {
+	// 	log.Println(err)
+	// }
 
-	text := string(file)
+	// text := string(file)
 
-	parser := Compile(WIKI_MOVIE)
+	// parser := Compile(WIKI_MOVIE)
 
-	output := Collect(text, parser)
+	// output := Collect(text, parser)
+
+	// log.Println(output)
+
+	output := utils.Scan("/Users/josh/Desktop/go-utils")
 
 	log.Println(output)
 
