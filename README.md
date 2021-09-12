@@ -1,4 +1,4 @@
-# NFLdb Node Server
+# Go Utils
 
 ## Table of contents
 * [Packages](#packages)
