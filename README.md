@@ -12,7 +12,13 @@
 
 - File storage functions: Scan, Read, Write
 
+### Parser
+
 - Text parsing functions: Compile, Collect
+
+### Neo4j
+
+- NEO4J DB functions: Connect, RunCypher
 
 ## Setup
 

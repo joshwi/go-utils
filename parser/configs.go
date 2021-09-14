@@ -2,7 +2,7 @@ package parser
 
 var PFR_TEAM_SEASON = []Config{
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -12,7 +12,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -22,7 +22,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -32,7 +32,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -42,7 +42,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -51,7 +51,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -60,7 +60,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -69,7 +69,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -78,7 +78,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
@@ -87,7 +87,7 @@ var PFR_TEAM_SEASON = []Config{
 		},
 	},
 	{
-		Label: "producer",
+		Label: "games",
 		Tags: []Tag{
 			{Name: "test", Value: "test"},
 		},
