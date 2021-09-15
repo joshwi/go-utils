@@ -1,12 +1,28 @@
 package main
 
 import (
+	"fmt"
+	"regexp"
 	"strconv"
 
 	"github.com/joshwi/go-utils/graphdb"
 	"github.com/joshwi/go-utils/parser"
 	"github.com/joshwi/go-utils/utils"
 )
+
+func get_urls(query map[string]string, urls []string, keys []string) []string {
+	output := []string{}
+
+	for _, url := range urls {
+		for _, key := range keys {
+			re, _ := regexp.Compile(fmt.Sprintf("{%v}", key))
+			url = re.ReplaceAllString(url, query[key])
+		}
+		output = append(output, url)
+	}
+
+	return output
+}
 
 func main() {
 

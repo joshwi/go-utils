@@ -6,6 +6,13 @@ import (
 
 // REGEX PARSER CONFIGS
 
+type Schema struct {
+	Urls   []string
+	Keys   []string
+	Config []Config
+	Parser []Parser
+}
+
 // Config struct contains precompiled regexp parsing template
 type Config struct {
 	Label string `json:"label"`
