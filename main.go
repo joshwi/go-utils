@@ -79,14 +79,14 @@ func StoreResults(driver neo4j.Driver, label string, bucket string, data parser.
 
 func main() {
 
-	username := utils.Env("NEO4J_USERNAME")
-	password := utils.Env("NEO4J_PASSWORD")
-	uri := utils.Env("NEO4J_URL")
+	username := "neo4j"
+	password := "nico"
+	uri := "bolt://localhost:7687"
 	driver := graphdb.Connect(uri, username, password)
 
 	name := "pfr_team_season"
 	teams := []string{"atl", "buf", "car", "chi", "cin", "cle", "clt", "crd", "dal", "den", "det", "gnb", "htx", "jax", "kan", "mia", "min", "nor", "nwe", "nyg", "nyj", "oti", "phi", "pit", "rai", "ram", "rav", "sdg", "sea", "sfo", "tam", "was"}
-	year := 2020
+	year := 2021
 
 	config := parser.Config{Name: "", Urls: []string{}, Keys: []string{}, Parser: []parser.Parser{}}
 
