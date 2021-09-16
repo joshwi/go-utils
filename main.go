@@ -1,217 +1,113 @@
 package main
 
 import (
-	"io/ioutil"
-	"log"
+	"fmt"
 	"regexp"
+	"sort"
+	"strconv"
 
-	schema "./schema"
+	"github.com/joshwi/go-utils/graphdb"
+	"github.com/joshwi/go-utils/parser"
+	"github.com/joshwi/go-utils/utils"
+	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-type Tag struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
-}
+func ComputeUrl(query map[string]string, urls []string, keys []string) []string {
+	output := []string{}
 
-type RegexTag struct {
-	Name  string
-	Value regexp.Regexp
-}
-
-type Collection struct {
-	Name  string
-	Value [][]Tag
-}
-
-type Output struct {
-	Tags        []Tag
-	Collections []Collection
-}
-
-type Config struct {
-	Label string `json:"label"`
-	Tags  []Tag  `json:"tags"`
-	Regex []Tag  `json:"regex"`
-}
-
-type Parser struct {
-	Label string
-	Tags  []Tag
-	Regex []RegexTag
-}
-
-var WIKI_MOVIE = []Config{
-	{
-		Label: "producer",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>Produced by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-			{Name: "", Value: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<producer>(.*?))<\\/a>"},
-		},
-	}, {
-		Label: "director",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>Directed by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-			{Name: "", Value: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<director>(.*?))<\\/a>"},
-		},
-	}, {
-		Label: "screenplay",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>Screenplay by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-			{Name: "", Value: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<writer>(.*?))<\\/a>"},
-		},
-	}, {
-		Label: "cast",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>Starring<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-			{Name: "", Value: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<actor>(.*?))<\\/a>"},
-		},
-	}, {
-		Label: "score",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>Music by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-			{Name: "", Value: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<artist>(.*?))<\\/a>"},
-		},
-	}, {
-		Label: "releaseDate",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>.*?Release date.*?<\\/th>.*?<\\/tr>"},
-			{Name: "", Value: "<span[^>]+>(?P<releaseDate>(\\d{4}-\\d{2}-\\d{2}))<\\/span>"},
-		},
-	},
-	{
-		Label: "runtime",
-		Tags: []Tag{
-			{Name: "test", Value: "test"},
-		},
-		Regex: []Tag{
-			{Name: "", Value: "(?ms)<tr><th[^>]+>.*?Running time.*?<\\/th>.*?<\\/tr>"},
-			{Name: "", Value: "<td[^>]+>(?P<length>(\\d+)).minutes.*?<\\/td>"},
-		},
-	},
-}
-
-func Compile(config []Config) []Parser {
-
-	log.Println(`[ Function: Compile ] [ Start ]`)
-
-	output := []Parser{}
-
-	for _, entry := range config {
-		tags := []RegexTag{}
-		for _, n := range entry.Regex {
-			r := regexp.MustCompile(n.Value)
-			exp := RegexTag{Name: n.Name, Value: *r}
-			tags = append(tags, exp)
+	for _, url := range urls {
+		for _, key := range keys {
+			re, _ := regexp.Compile(fmt.Sprintf("{%v}", key))
+			url = re.ReplaceAllString(url, query[key])
 		}
-		parser := Parser{Label: entry.Label, Tags: entry.Tags, Regex: tags}
-		output = append(output, parser)
+		output = append(output, url)
 	}
 
-	log.Println(`[ Function: Compile ] [ Finish ]`)
-
 	return output
-
 }
 
-func Collect(text string, parsers []Parser) Output {
+func RunJob(query map[string]string, urls []string, config parser.Config) (string, string, parser.Output) {
 
-	log.Println(`[ Function: Collect ] [ Start ]`)
+	text := ``
 
-	output := Output{}
+	for _, url := range urls {
 
-	for _, parser := range parsers {
-		input := Parse(text, parser.Label, parser.Regex, 0)
-		output.Tags = append(output.Tags, input.Tags...)
-		output.Collections = append(output.Collections, input.Collections...)
-	}
-
-	log.Println(`[ Function: Collect ] [ Finish ]`)
-
-	return output
-
-}
-
-func Parse(text string, title string, regex []RegexTag, num int) Output {
-
-	output := Output{}
-
-	r := regex[num].Value
-
-	response := r.FindAllStringSubmatch(text, -1)
-
-	if len(response) > 0 {
-		if len(r.SubexpNames()) > 1 {
-			values := []Tag{}
-			collection := Collection{Name: title}
-			for i := range response {
-				tags := []Tag{}
-				for j, name := range r.SubexpNames() {
-					if name != "" {
-						tag := Tag{Name: name, Value: response[i][j]}
-						tags = append(tags, tag)
-					}
-				}
-				if len(tags) > 1 {
-					collection.Value = append(collection.Value, tags)
-				} else if len(tags) == 1 {
-					values = append(values, tags...)
-				}
-
-			}
-			output.Tags = append(output.Tags, values...)
-			if len(collection.Value) > 0 {
-				output.Collections = append(output.Collections, collection)
-			}
-		} else if len(r.SubexpNames()) == 1 && len(regex) > num+1 {
-			if len(response[0]) > 0 {
-				result := Parse(response[0][0], title, regex, num+1)
-				output.Tags = append(output.Tags, result.Tags...)
-				output.Collections = append(output.Collections, result.Collections...)
-			}
+		response := utils.Get(url)
+		if response.Status == "200 OK" {
+			text = response.Data
+			break
 		}
-
 	}
 
-	return output
+	label := ``
+	bucket := config.Name
 
+	output := parser.Collect(text, config.Parser)
+
+	//Sort keys alphabetically
+	keys := make([]string, 0, len(query))
+	for k := range query {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	// Add query parameters to output Tags
+	for n := range keys {
+		if len(label) == 0 {
+			label += query[keys[n]]
+		} else {
+			label += `_` + query[keys[n]]
+		}
+		output.Tags = append(output.Tags, parser.Tag{Name: keys[n], Value: query[keys[n]]})
+	}
+
+	return label, bucket, output
+}
+
+func StoreResults(driver neo4j.Driver, label string, bucket string, data parser.Output) {
+	for _, item := range data.Collections {
+		for n, entry := range item.Value {
+			properties := []parser.Tag{}
+			properties = append(properties, data.Tags...)
+			properties = append(properties, entry...)
+			new_bucket := bucket + "_" + item.Name
+			new_label := label + "_" + strconv.Itoa(n+1)
+			graphdb.PutNode(driver, new_bucket, new_label, properties)
+		}
+	}
 }
 
 func main() {
 
-	// log.Println([]schema.Config{})
+	username := utils.Env("NEO4J_USERNAME")
+	password := utils.Env("NEO4J_PASSWORD")
+	uri := utils.Env("NEO4J_URL")
+	driver := graphdb.Connect(uri, username, password)
 
-	schema.Test()
+	name := "pfr_team_season"
+	teams := []string{"atl", "buf", "car", "chi", "cin", "cle", "clt", "crd", "dal", "den", "det", "gnb", "htx", "jax", "kan", "mia", "min", "nor", "nwe", "nyg", "nyj", "oti", "phi", "pit", "rai", "ram", "rav", "sdg", "sea", "sfo", "tam", "was"}
+	year := 2020
 
-	file, err := ioutil.ReadFile("input.txt")
+	config := parser.Config{Name: "", Urls: []string{}, Keys: []string{}, Parser: []parser.Parser{}}
 
-	if err != nil {
-		log.Println(err)
+	for _, item := range parser.CONFIG_LIST {
+		if name == item.Name {
+			config = item
+		}
 	}
 
-	text := string(file)
+	config.Parser = parser.Compile(config.Parser)
 
-	parser := Compile(WIKI_MOVIE)
+	for _, team := range teams {
 
-	output := Collect(text, parser)
+		query := map[string]string{"tag": team, "year": strconv.Itoa(year)}
 
-	log.Println(output)
+		urls := ComputeUrl(query, config.Urls, config.Keys)
+
+		label, bucket, data := RunJob(query, urls, config)
+
+		StoreResults(driver, label, bucket, data)
+
+	}
 
 }
