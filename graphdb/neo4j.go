@@ -64,7 +64,7 @@ func RunCypher(driver neo4j.Driver, query string) [][]parser.Tag {
 
 func PutNode(driver neo4j.Driver, node string, label string, properties []parser.Tag) {
 
-	log.Println(`[ Function: PutNode ] [ Start ]`)
+	// log.Println(`[ Function: PutNode ] [ Start ]`)
 
 	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
 	session, err := driver.NewSession(sessionConfig)
@@ -86,7 +86,7 @@ func PutNode(driver neo4j.Driver, node string, label string, properties []parser
 
 	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
 
-	log.Println(`[ Function: PutNode ] [ Finish ]`)
+	// log.Println(`[ Function: PutNode ] [ Finish ]`)
 
 	session.Close()
 
