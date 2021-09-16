@@ -3,14 +3,16 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strconv"
 
 	"github.com/joshwi/go-utils/graphdb"
 	"github.com/joshwi/go-utils/parser"
 	"github.com/joshwi/go-utils/utils"
+	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-func get_urls(query map[string]string, urls []string, keys []string) []string {
+func ComputeUrl(query map[string]string, urls []string, keys []string) []string {
 	output := []string{}
 
 	for _, url := range urls {
@@ -24,6 +26,57 @@ func get_urls(query map[string]string, urls []string, keys []string) []string {
 	return output
 }
 
+func RunJob(query map[string]string, urls []string, config parser.Config) (string, string, parser.Output) {
+
+	text := ``
+
+	for _, url := range urls {
+
+		response := utils.Get(url)
+		if response.Status == "200 OK" {
+			text = response.Data
+			break
+		}
+	}
+
+	label := ``
+	bucket := config.Name
+
+	output := parser.Collect(text, config.Parser)
+
+	//Sort keys alphabetically
+	keys := make([]string, 0, len(query))
+	for k := range query {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	// Add query parameters to output Tags
+	for n := range keys {
+		if len(label) == 0 {
+			label += query[keys[n]]
+		} else {
+			label += `_` + query[keys[n]]
+		}
+		output.Tags = append(output.Tags, parser.Tag{Name: keys[n], Value: query[keys[n]]})
+	}
+
+	return label, bucket, output
+}
+
+func StoreResults(driver neo4j.Driver, label string, bucket string, data parser.Output) {
+	for _, item := range data.Collections {
+		for n, entry := range item.Value {
+			properties := []parser.Tag{}
+			properties = append(properties, data.Tags...)
+			properties = append(properties, entry...)
+			new_bucket := bucket + "_" + item.Name
+			new_label := label + "_" + strconv.Itoa(n+1)
+			graphdb.PutNode(driver, new_bucket, new_label, properties)
+		}
+	}
+}
+
 func main() {
 
 	username := utils.Env("NEO4J_USERNAME")
@@ -31,32 +84,30 @@ func main() {
 	uri := utils.Env("NEO4J_URL")
 	driver := graphdb.Connect(uri, username, password)
 
-	query := map[string]string{"tag": "kan", "year": "2020"}
-	text := utils.Get("https://www.pro-football-reference.com/teams/kan/2020.htm")
-	search := parser.Compile(parser.PFR_TEAM_SEASON)
-	output := parser.Collect(text.Data, search)
+	name := "pfr_team_season"
+	teams := []string{"atl", "buf", "car", "chi", "cin", "cle", "clt", "crd", "dal", "den", "det", "gnb", "htx", "jax", "kan", "mia", "min", "nor", "nwe", "nyg", "nyj", "oti", "phi", "pit", "rai", "ram", "rav", "sdg", "sea", "sfo", "tam", "was"}
+	year := 2020
 
-	label := ``
-	bucket := "test"
+	config := parser.Config{Name: "", Urls: []string{}, Keys: []string{}, Parser: []parser.Parser{}}
 
-	for key, value := range query {
-		if len(label) == 0 {
-			label += value
-		} else {
-			label += `_` + value
+	for _, item := range parser.CONFIG_LIST {
+		if name == item.Name {
+			config = item
 		}
-		output.Tags = append(output.Tags, parser.Tag{Name: key, Value: value})
 	}
 
-	for _, item := range output.Collections {
-		for n, entry := range item.Value {
-			properties := []parser.Tag{}
-			properties = append(properties, output.Tags...)
-			properties = append(properties, entry...)
-			new_bucket := bucket + "_" + item.Name
-			new_label := label + "_" + strconv.Itoa(n)
-			graphdb.PutNode(driver, new_bucket, new_label, properties)
-		}
+	config.Parser = parser.Compile(config.Parser)
+
+	for _, team := range teams {
+
+		query := map[string]string{"tag": team, "year": strconv.Itoa(year)}
+
+		urls := ComputeUrl(query, config.Urls, config.Keys)
+
+		label, bucket, data := RunJob(query, urls, config)
+
+		StoreResults(driver, label, bucket, data)
+
 	}
 
 }

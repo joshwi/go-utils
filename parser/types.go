@@ -4,36 +4,30 @@ import (
 	"regexp"
 )
 
-// REGEX PARSER CONFIGS
+// PARSER INPUT STRUCTURES
 
-type Schema struct {
+// Config structure containing parser and metadata
+type Config struct {
+	Name   string
 	Urls   []string
 	Keys   []string
-	Config []Config
 	Parser []Parser
-}
-
-// Config struct contains precompiled regexp parsing template
-type Config struct {
-	Label string `json:"label"`
-	Tags  []Tag  `json:"tags"`
-	Regex []Tag  `json:"regex"`
 }
 
 // Parser structure contains post compiled regexp parsing template
 type Parser struct {
-	Label string
-	Tags  []Tag
-	Regex []RegexTag
+	Label string  `json:"label"`
+	Tags  []Tag   `json:"tags"`
+	Regex []Regex `json:"regex"`
 }
 
-// Tag struct containing post compiled regexp
-type RegexTag struct {
+// Regex struct containing pre & post compiled regexp
+type Regex struct {
 	Name  string
 	Value regexp.Regexp
 }
 
-// DATA OUTPUT STURCTURES
+// DATA OUTPUT STRUCTURES
 
 // Tag strut for key value data storage
 type Tag struct {

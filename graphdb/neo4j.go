@@ -3,7 +3,6 @@ package graphdb
 import (
 	"fmt"
 	"log"
-	"strconv"
 
 	"github.com/joshwi/go-utils/parser"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
@@ -85,10 +84,10 @@ func PutNode(driver neo4j.Driver, node string, label string, properties []parser
 
 	counters := summary.Counters()
 
-	log.Println(`[ Function: PutNode ] Labels Added: ` + strconv.Itoa(counters.LabelsAdded()))
-	log.Println(`[ Function: PutNode ] Nodes Created: ` + strconv.Itoa(counters.NodesCreated()))
-	log.Println(`[ Function: PutNode ] Properties Set: ` + strconv.Itoa(counters.PropertiesSet()))
+	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
 
 	log.Println(`[ Function: PutNode ] [ Finish ]`)
+
+	session.Close()
 
 }
