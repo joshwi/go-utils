@@ -3,7 +3,10 @@ WORKDIR /app
 RUN ls -la
 COPY go.mod ./
 COPY go.sum ./
-COPY app /app
+COPY graphdb ./
+COPY parser ./
+COPY utils ./
+COPY main.go ./main.go
 RUN ls -la
 RUN go mod download
 RUN go build -o /nfl_collector
