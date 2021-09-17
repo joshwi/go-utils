@@ -3,9 +3,9 @@ WORKDIR /app
 RUN ls -la
 COPY go.mod ./
 COPY go.sum ./
-COPY graphdb ./
-COPY parser ./
-COPY utils ./
+COPY graphdb ./graphdb
+COPY parser ./parser
+COPY utils ./utils
 COPY main.go ./main.go
 RUN ls -la
 RUN go mod download
