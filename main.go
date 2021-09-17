@@ -1,10 +1,13 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"log"
 	"regexp"
 	"sort"
 	"strconv"
+	"time"
 
 	"github.com/joshwi/go-utils/graphdb"
 	"github.com/joshwi/go-utils/parser"
@@ -64,7 +67,7 @@ func RunJob(query map[string]string, urls []string, config parser.Config) (strin
 	return label, bucket, output
 }
 
-func StoreResults(driver neo4j.Driver, label string, bucket string, data parser.Output) {
+func StoreResults(driver neo4j.Session, label string, bucket string, data parser.Output) {
 	for _, item := range data.Collections {
 		for n, entry := range item.Value {
 			properties := []parser.Tag{}
@@ -79,14 +82,28 @@ func StoreResults(driver neo4j.Driver, label string, bucket string, data parser.
 
 func main() {
 
+	var name string
+	var year string
+	current_year := strconv.Itoa(time.Now().Year())
+
+	// flags declaration using flag package
+	flag.StringVar(&name, "n", "pfr_team_season", "Specify config. Default is root")
+	flag.StringVar(&year, "y", current_year, "Specify year. Default is current year")
+	flag.Parse()
+
+	log.Println(name, year)
+
 	username := "neo4j"
 	password := "nico"
 	uri := "bolt://neo4j"
 	driver := graphdb.Connect(uri, username, password)
+	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
+	session, err := driver.NewSession(sessionConfig)
+	if err != nil {
+		log.Println(err)
+	}
 
-	name := "pfr_team_season"
 	teams := []string{"atl", "buf", "car", "chi", "cin", "cle", "clt", "crd", "dal", "den", "det", "gnb", "htx", "jax", "kan", "mia", "min", "nor", "nwe", "nyg", "nyj", "oti", "phi", "pit", "rai", "ram", "rav", "sdg", "sea", "sfo", "tam", "was"}
-	year := 2021
 
 	config := parser.Config{Name: "", Urls: []string{}, Keys: []string{}, Parser: []parser.Parser{}}
 
@@ -98,16 +115,26 @@ func main() {
 
 	config.Parser = parser.Compile(config.Parser)
 
-	for _, team := range teams {
+	if config.Name == "pfr_team_season" {
+		for _, team := range teams {
 
-		query := map[string]string{"tag": team, "year": strconv.Itoa(year)}
+			query := map[string]string{"tag": team, "year": year}
+
+			urls := ComputeUrl(query, config.Urls, config.Keys)
+
+			label, bucket, data := RunJob(query, urls, config)
+
+			StoreResults(session, label, bucket, data)
+
+		}
+	} else if config.Name == "pfr_season_draft" {
+		query := map[string]string{"year": year}
 
 		urls := ComputeUrl(query, config.Urls, config.Keys)
 
 		label, bucket, data := RunJob(query, urls, config)
 
-		StoreResults(driver, label, bucket, data)
-
+		StoreResults(session, label, bucket, data)
 	}
 
 }

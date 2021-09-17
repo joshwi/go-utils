@@ -74,6 +74,20 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
+		Name: "pfr_season_draft",
+		Urls: []string{"https://www.pro-football-reference.com/years/{year}/draft.htm"},
+		Keys: []string{"year"},
+		Parser: []Parser{
+			{
+				Label: "picks",
+				Regex: []Regex{
+					{Name: "(?ms)<caption>Drafted.*?Players.*?<\\/caption>.*?<\\/table>"},
+					{Name: "<tr ><th.*?>(?P<round>(.*?))<\\/th><td.*?>(?P<pick>(.*?))<\\/td><td.*?><a href=.\\/teams\\/(?P<tag>(...))\\/...._draft.htm. title=.(?P<team>(.*?)).>.*?<\\/a><\\/td><td.*?><strong><a.*?>(?P<player>(.*?))<\\/a><\\/strong><\\/td><td.*?>(?P<position>(.*?))<\\/td><td.*?>(?P<age>(.*?))<\\/td><td.*?>(?P<yearLast>(.*?))<\\/td><td.*?>(?P<yearFirstTeamAllPro>(.*?))<\\/td><td.*?>(?P<yearProBowl>(.*?))<\\/td><td.*?>(?P<yearPrimaryStarter>(.*?))<\\/td><td.*?>(?P<avCareer>(.*?))<\\/td><td.*?>(?P<avTeam>(.*?))<\\/td><td.*?>(?P<gamesPlayed>(.*?))<\\/td><td.*?>(?P<passCompletions>(.*?))<\\/td><td.*?>(?P<passAttempts>(.*?))<\\/td><td.*?>(?P<passYards>(.*?))<\\/td><td.*?>(?P<passTds>(.*?))<\\/td><td.*?>(?P<passInts>(.*?))<\\/td><td.*?>(?P<rushAttempts>(.*?))<\\/td><td.*?>(?P<rushYards>(.*?))<\\/td><td.*?>(?P<rushTds>(.*?))<\\/td><td.*?>(?P<receptions>(.*?))<\\/td><td.*?>(?P<recYards>(.*?))<\\/td><td.*?>(?P<recTds>(.*?))<\\/td><td.*?>(?P<soloTackles>(.*?))<\\/td><td.*?>(?P<interceptions>(.*?))<\\/td><td.*?>(?P<sacks>(.*?))<\\/td><td.*?><a href=.(?P<collegeUrl>(.*?)).>(?P<college>(.*?))<\\/a><\\/td><td.*?><a href=.(?P<collegeStatsUrl>(.*?)).>College Stats<\\/a><\\/td>.*?<\\/tr>"},
+				},
+			},
+		},
+	},
+	{
 		Name: "wiki_movie_info",
 		Urls: []string{},
 		Keys: []string{"title", "year"},

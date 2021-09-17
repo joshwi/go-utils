@@ -62,15 +62,9 @@ func RunCypher(driver neo4j.Driver, query string) [][]parser.Tag {
 // 	return [][]parser.Tag{}
 // }
 
-func PutNode(driver neo4j.Driver, node string, label string, properties []parser.Tag) {
+func PutNode(session neo4j.Session, node string, label string, properties []parser.Tag) {
 
 	// log.Println(`[ Function: PutNode ] [ Start ]`)
-
-	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
-	session, err := driver.NewSession(sessionConfig)
-	if err != nil {
-		log.Println(err)
-	}
 
 	cypher := `MERGE (n: ` + node + ` { label: "` + label + `" })`
 
@@ -79,6 +73,9 @@ func PutNode(driver neo4j.Driver, node string, label string, properties []parser
 	}
 
 	result, err := session.Run(cypher, map[string]interface{}{})
+	if err != nil {
+		log.Println(err)
+	}
 
 	summary, err := result.Summary()
 
@@ -87,7 +84,5 @@ func PutNode(driver neo4j.Driver, node string, label string, properties []parser
 	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
 
 	// log.Println(`[ Function: PutNode ] [ Finish ]`)
-
-	session.Close()
 
 }
