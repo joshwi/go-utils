@@ -14,4 +14,4 @@ RUN GOOS=linux GOARCH=arm64 go build -o /nfl_collector
 RUN chmod 755 ./cron/entrypoint.sh
 RUN /usr/bin/crontab ./cron/crontab.txt
 WORKDIR /app/cron
-CMD ["./cron/entrypoint.sh"]
+CMD ["./entrypoint.sh"]
