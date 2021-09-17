@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/joshwi/go-utils/parser"
+	"github.com/joshwi/go-utils/app/parser"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 

@@ -6,9 +6,9 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/joshwi/go-utils/graphdb"
-	"github.com/joshwi/go-utils/parser"
-	"github.com/joshwi/go-utils/utils"
+	"github.com/joshwi/go-utils/app/graphdb"
+	"github.com/joshwi/go-utils/app/parser"
+	"github.com/joshwi/go-utils/app/utils"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
