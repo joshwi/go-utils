@@ -1,1 +1,1 @@
-*/1 * * * * /nfl_collector >> /collection.log
+*/1 * * * * /app/nfl_collector >> /app/collection.log
