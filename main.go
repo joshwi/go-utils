@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 	"sort"
 	"strconv"
@@ -84,8 +83,6 @@ func main() {
 	password := "nico"
 	uri := "bolt://neo4j"
 	driver := graphdb.Connect(uri, username, password)
-
-	log.Println(driver.VerifyConnectivity())
 
 	name := "pfr_team_season"
 	teams := []string{"atl", "buf", "car", "chi", "cin", "cle", "clt", "crd", "dal", "den", "det", "gnb", "htx", "jax", "kan", "mia", "min", "nor", "nwe", "nyg", "nyj", "oti", "phi", "pit", "rai", "ram", "rav", "sdg", "sea", "sfo", "tam", "was"}

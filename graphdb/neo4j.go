@@ -80,13 +80,11 @@ func PutNode(driver neo4j.Driver, node string, label string, properties []parser
 
 	result, err := session.Run(cypher, map[string]interface{}{})
 
-	log.Println(result)
+	summary, err := result.Summary()
 
-	// summary, err := result.Summary()
+	counters := summary.Counters()
 
-	// counters := summary.Counters()
-
-	// log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
+	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
 
 	// log.Println(`[ Function: PutNode ] [ Finish ]`)
 
