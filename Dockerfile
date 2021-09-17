@@ -1,6 +1,5 @@
 FROM golang:1.16-alpine
 WORKDIR /app
-RUN ls -la
 COPY go.mod ./
 COPY go.sum ./
 COPY graphdb ./graphdb
@@ -10,7 +9,8 @@ COPY cron ./cron
 COPY main.go ./main.go
 RUN ls -la
 RUN go mod download
-RUN go build -o /nfl_collector
+RUN go env GOOS GOARCH
+RUN go GOOS=linux GOARCH=arm64 build -o /nfl_collector
 RUN chmod 755 ./cron/entrypoint.sh
 RUN /usr/bin/crontab ./cron/crontab.txt
 CMD ["./cron/entrypoint.sh"]
