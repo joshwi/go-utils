@@ -1,1 +1,2 @@
-0 9 * * TUE /app/nfldb_collector >> /app/collection.log
+0 9 * * TUE /app/nfldb_collector -n=pfr_team_season >> /app/collection.log
+0 9 * * MON /app/nfldb_collector -n=pfr_season_draft >> /app/collection.log
