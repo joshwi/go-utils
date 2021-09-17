@@ -82,7 +82,7 @@ func main() {
 
 	username := "neo4j"
 	password := "nico"
-	uri := "bolt://0.0.0.0:7687"
+	uri := "bolt://neo4j"
 	driver := graphdb.Connect(uri, username, password)
 
 	log.Println(driver.VerifyConnectivity())
