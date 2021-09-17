@@ -1,1 +1,1 @@
-*/1 * * * * /app/nfldb_collector >> /app/collection.log
+0 9 * * TUE /app/nfldb_collector >> /app/collection.log
