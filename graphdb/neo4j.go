@@ -24,15 +24,10 @@ func Connect(url string, username string, password string) neo4j.Driver {
 	return driver
 }
 
-func RunCypher(driver neo4j.Driver, query string) [][]parser.Tag {
+func RunCypher(session neo4j.Session, query string) [][]parser.Tag {
 
 	output := [][]parser.Tag{}
 
-	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
-	session, err := driver.NewSession(sessionConfig)
-	if err != nil {
-		log.Println(err)
-	}
 	// defer session.Close()
 
 	result, err := session.Run(query, map[string]interface{}{})
@@ -58,13 +53,31 @@ func RunCypher(driver neo4j.Driver, query string) [][]parser.Tag {
 }
 
 // func GetNode(driver string, node string, query string) [][]parser.Tag {
-
 // 	return [][]parser.Tag{}
 // }
 
-func PutNode(session neo4j.Session, node string, label string, properties []parser.Tag) {
+func PostNode(session neo4j.Session, node string, label string, properties []parser.Tag) {
 
-	// log.Println(`[ Function: PutNode ] [ Start ]`)
+	cypher := `CREATE (n: ` + node + ` { label: "` + label + `" })`
+
+	for _, item := range properties {
+		cypher += ` SET n.` + item.Name + ` = "` + item.Value + `"`
+	}
+
+	result, err := session.Run(cypher, map[string]interface{}{})
+	if err != nil {
+		log.Println(err)
+	}
+
+	summary, err := result.Summary()
+
+	counters := summary.Counters()
+
+	log.Println(fmt.Sprintf(`[ Function: PostNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
+
+}
+
+func PutNode(session neo4j.Session, node string, label string, properties []parser.Tag) {
 
 	cypher := `MERGE (n: ` + node + ` { label: "` + label + `" })`
 
@@ -83,6 +96,7 @@ func PutNode(session neo4j.Session, node string, label string, properties []pars
 
 	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
 
-	// log.Println(`[ Function: PutNode ] [ Finish ]`)
-
 }
+
+// func DeleteNode(driver string, node string, label string) {
+// }

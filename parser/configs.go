@@ -2,6 +2,20 @@ package parser
 
 var CONFIG_LIST = []Config{
 	{
+		Name: "pfr_map_team",
+		Urls: []string{"https://www.pro-football-reference.com/teams"},
+		Keys: []string{},
+		Parser: []Parser{
+			{
+				Label: "teams",
+				Regex: []Regex{
+					{Name: "(?ms)<div class=.table_container. id=.div_teams_active.>.*?<\\/table>"},
+					{Name: "<th[^>]+><a href=.\\/teams\\/(?P<tag>(.*?))\\/.>(?P<team>(.*?))<\\/a><\\/th><td[^>]+>(?P<year_min>(.*?))<\\/td><td[^>]+>(?P<year_max>(.*?))<\\/td><td[^>]+>(?P<win>(.*?))<\\/td><td[^>]+>(?P<loss>(.*?))<\\/td><td[^>]+>(?P<tie>(.*?))<\\/td><td[^>]+>(?P<win_perc>(.*?))<\\/td><td[^>]+><a href=.(?P<top_player_url>(.*?)). title[^>]+>(?P<top_player>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_pass_url>(.*?)). title[^>]+>(?P<top_pass>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_rush_url>(.*?)). title[^>]+>(?P<top_rush>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_rec_url>(.*?)). title[^>]+>(?P<top_rec>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_coach_url>(.*?)). title[^>]+>(?P<top_coach>(.*?))<\\/a><\\/td><td[^>]+>(?P<playoff_yrs>(.*?))<\\/td><td[^>]+>(?P<playoff_win>(.*?))<\\/td><td[^>]+>(?P<playoff_loss>(.*?))<\\/td><td[^>]+>(?P<playoff_perc>(.*?))<\\/td><td[^>]+>(?P<champs>(.*?))<\\/td><td[^>]+>(?P<sb_champs>(.*?))<\\/td><td[^>]+>(?P<conf_champs>(.*?))<\\/td><td[^>]+>(?P<div_champs>(.*?))<\\/td>"},
+				},
+			},
+		},
+	},
+	{
 		Name: "pfr_team_season",
 		Urls: []string{"https://www.pro-football-reference.com/teams/{tag}/{year}.htm"},
 		Keys: []string{"tag", "year"},
@@ -88,6 +102,55 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
+		Name: "pfr_boxscore_games",
+		Urls: []string{"https://www.pro-football-reference.com/boxscores/{id}.htm"},
+		Keys: []string{"id"},
+		Parser: []Parser{
+			{
+				Label: "officials",
+				Regex: []Regex{
+					{Name: "(?ms)<div id=.all_officials.*?<table[^>]+>.*?<\\/table>"},
+					{Name: "<th[^>]+>(?P<type>(.*?))<\\/th><td[^>]+><a href=.(?P<url>(.*?)).>(?P<name>(.*?))<\\/a><\\/td>"},
+				},
+			},
+			{
+				Label: "home_snap_counts",
+				Regex: []Regex{
+					{Name: "(?ms)<div id=.all_home_snap_counts..*?<\\/table>"},
+					{Name: "<th.*?><a href=.(?P<player_url>(.*?)).>(?P<player>(.*?))<a\\/><\\/th><td.*?>(?P<position>(.*?))<\\/td><td.*?>(?P<off>(.*?))<\\/td><td.*?>(?P<off_perc>(.*?))<\\/td><td.*?>(?P<def>(.*?))<\\/td><td.*?>(?P<def_perc>(.*?))<\\/td><td.*?>(?P<st>(.*?))<\\/td><td.*?>(?P<st_perc>(.*?))<\\/td>"},
+				},
+			},
+			{
+				Label: "away_snap_counts",
+				Regex: []Regex{
+					{Name: "(?ms)<div id=.all_vis_snap_counts..*?<\\/table>"},
+					{Name: "<th.*?><a href=.(?P<player_url>(.*?)).>(?P<player>(.*?))<a\\/><\\/th><td.*?>(?P<position>(.*?))<\\/td><td.*?>(?P<off>(.*?))<\\/td><td.*?>(?P<off_perc>(.*?))<\\/td><td.*?>(?P<def>(.*?))<\\/td><td.*?>(?P<def_perc>(.*?))<\\/td><td.*?>(?P<st>(.*?))<\\/td><td.*?>(?P<st_perc>(.*?))<\\/td>"},
+				},
+			},
+			{
+				Label: "home_drives",
+				Regex: []Regex{
+					{Name: "(?ms)<div id=.all_home_drives..*?<\\/table>"},
+					{Name: "<th.*?>(?P<number>(.*?))<\\/th><td.*?>(?P<quarter>(.*?))<\\/td><td.*?>(?P<time>(.*?))<\\/td><td.*?>(?P<location>(.*?))<\\/td><td.*?><span class=.tooltip. tip=.(?P<pass>(\\d+)) Pass, (?P<rush>(\\d+)) Rush, (?P<penalty>(\\d+)) Penalty.>(?P<plays>(.*?))<\\/span><\\/td><td.*?>(?P<length>(.*?))<\\/td><td.*?>(?P<net_yds>(.*?))<\\/td><td.*?>(?P<result>(.*?))<\\/td>"},
+				},
+			},
+			{
+				Label: "away_drives",
+				Regex: []Regex{
+					{Name: "(?ms)<div id=.all_vis_drives..*?<\\/table>"},
+					{Name: "<th.*?>(?P<number>(.*?))<\\/th><td.*?>(?P<quarter>(.*?))<\\/td><td.*?>(?P<time>(.*?))<\\/td><td.*?>(?P<location>(.*?))<\\/td><td.*?><span class=.tooltip. tip=.(?P<pass>(\\d+)) Pass, (?P<rush>(\\d+)) Rush, (?P<penalty>(\\d+)) Penalty.>(?P<plays>(.*?))<\\/span><\\/td><td.*?>(?P<length>(.*?))<\\/td><td.*?>(?P<net_yds>(.*?))<\\/td><td.*?>(?P<result>(.*?))<\\/td>"},
+				},
+			},
+			{
+				Label: "plays",
+				Regex: []Regex{
+					{Name: "(?ms)<caption>Full Play-By-Play.*?<\\/caption>.*?<\\/table>"},
+					{Name: "<th.*?>(?P<quarter>(.*?))<\\/th><td.*?>(?P<time>(.*?))<\\/td><td.*?>(?P<down>(.*?))<\\/td><td.*?>(?P<distance>(.*?))<\\/td><td.*?>(?P<location>(.*?))<\\/td><td.*?>(?P<description>(.*?))<\\/td>"},
+				},
+			},
+		},
+	},
+	{
 		Name: "wiki_movie_info",
 		Urls: []string{},
 		Keys: []string{"title", "year"},
@@ -134,6 +197,19 @@ var CONFIG_LIST = []Config{
 				Regex: []Regex{
 					{Name: "(?ms)<tr><th[^>]+>.*?Running time.*?<\\/th>.*?<\\/tr>"},
 					{Name: "<td[^>]+>(?P<length>(\\d+)).minutes.*?<\\/td>"},
+				},
+			},
+		},
+	},
+	{
+		Name: "genius_song_lyrics",
+		Urls: []string{},
+		Keys: []string{},
+		Parser: []Parser{
+			{
+				Label: "",
+				Regex: []Regex{
+					{Name: "(?ms)<div class=.lyrics.>.*?<!--sse-->(?<unsynchronisedLyrics>(.*?))<!--\\/sse-->.*?<\\/div>"},
 				},
 			},
 		},
