@@ -55,3 +55,11 @@ crontab -e
 ```
 */1 * * * * /path/to/repo/main > /path/to/repo/output.log
 ```
+
+Examples
+
+```
+go run main.go -c='wiki_film'
+go run main.go -c='wiki_film_year' -q='MATCH (n:wiki_film_year) RETURN DISTINCT n.url as url, n.year as year'
+go run main.go -c='wiki_movie' -q='MATCH (n:wiki_film_year_movie) WHERE n.year=~"199.*" RETURN DISTINCT n.url as url, n.title as title, n.year as year'
+```

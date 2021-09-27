@@ -2,6 +2,91 @@ package parser
 
 var CONFIG_LIST = []Config{
 	{
+		Name: "wiki_film",
+		Urls: []string{"https://en.wikipedia.org/wiki/Lists_of_American_films"},
+		Keys: []string{},
+		Parser: []Parser{
+			{
+				Label: "year",
+				Regex: []Regex{
+					{Name: "(?ms)<li><a href=.(?P<url>(.*?)). title=.List of American films of \\d{4}.>List of American films of (?P<year>(\\d{4}))<\\/a><\\/li>"},
+				},
+			},
+		},
+	},
+	{
+		Name: "wiki_film_year",
+		Urls: []string{"https://en.wikipedia.org/wiki/List_of_American_films_of_{year}"},
+		Keys: []string{"year"},
+		Parser: []Parser{
+			{
+				Label: "movie",
+				Regex: []Regex{
+					{Name: "(?ms)<tbody>.*?Opening.*?Title.*?Production company.*?Cast and crew.*?<\\/tbody>"},
+					{Name: "(?ms)<td><i><a href=\"(?P<url>(\\/wiki\\/.*?))\".*?title=\"(?P<title>(.*?))\">"},
+				},
+			},
+			{
+				Label: "movie",
+				Regex: []Regex{
+					{Name: "(?ms)<tbody>.*?Title.*?Director.*?Cast.*?Genre.*?Note.*?<\\/tbody>"},
+					{Name: "(?ms)<td><i><a href=\"(?P<url>(\\/wiki\\/.*?))\".*?title=\"(?P<title>(.*?))\">"},
+				},
+			},
+		},
+	},
+	{
+		Name: "wiki_movie",
+		Urls: []string{"https://en.wikipedia.org{url}"},
+		Keys: []string{"url"},
+		Parser: []Parser{
+			{
+				Label: "producer",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>Produced by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
+					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<producer>(.*?))<\\/a>"},
+				},
+			}, {
+				Label: "director",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>Directed by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
+					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<director>(.*?))<\\/a>"},
+				},
+			}, {
+				Label: "screenplay",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>Screenplay by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
+					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<writer>(.*?))<\\/a>"},
+				},
+			}, {
+				Label: "cast",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>Starring<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
+					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<actor>(.*?))<\\/a>"},
+				},
+			}, {
+				Label: "score",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>Music by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
+					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<artist>(.*?))<\\/a>"},
+				},
+			}, {
+				Label: "releaseDate",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>.*?Release date.*?<\\/th>.*?<\\/tr>"},
+					{Name: "<span[^>]+>(?P<releaseDate>(\\d{4}-\\d{2}-\\d{2}))<\\/span>"},
+				},
+			},
+			{
+				Label: "runtime",
+				Regex: []Regex{
+					{Name: "(?ms)<tr><th[^>]+>.*?Running time.*?<\\/th>.*?<\\/tr>"},
+					{Name: "<td[^>]+>(?P<length>(\\d+)).minutes.*?<\\/td>"},
+				},
+			},
+		},
+	},
+	{
 		Name: "pfr_map_team",
 		Urls: []string{"https://www.pro-football-reference.com/teams"},
 		Keys: []string{},
@@ -11,6 +96,20 @@ var CONFIG_LIST = []Config{
 				Regex: []Regex{
 					{Name: "(?ms)<div class=.table_container. id=.div_teams_active.>.*?<\\/table>"},
 					{Name: "<th[^>]+><a href=.\\/teams\\/(?P<tag>(.*?))\\/.>(?P<team>(.*?))<\\/a><\\/th><td[^>]+>(?P<year_min>(.*?))<\\/td><td[^>]+>(?P<year_max>(.*?))<\\/td><td[^>]+>(?P<win>(.*?))<\\/td><td[^>]+>(?P<loss>(.*?))<\\/td><td[^>]+>(?P<tie>(.*?))<\\/td><td[^>]+>(?P<win_perc>(.*?))<\\/td><td[^>]+><a href=.(?P<top_player_url>(.*?)). title[^>]+>(?P<top_player>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_pass_url>(.*?)). title[^>]+>(?P<top_pass>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_rush_url>(.*?)). title[^>]+>(?P<top_rush>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_rec_url>(.*?)). title[^>]+>(?P<top_rec>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_coach_url>(.*?)). title[^>]+>(?P<top_coach>(.*?))<\\/a><\\/td><td[^>]+>(?P<playoff_yrs>(.*?))<\\/td><td[^>]+>(?P<playoff_win>(.*?))<\\/td><td[^>]+>(?P<playoff_loss>(.*?))<\\/td><td[^>]+>(?P<playoff_perc>(.*?))<\\/td><td[^>]+>(?P<champs>(.*?))<\\/td><td[^>]+>(?P<sb_champs>(.*?))<\\/td><td[^>]+>(?P<conf_champs>(.*?))<\\/td><td[^>]+>(?P<div_champs>(.*?))<\\/td>"},
+				},
+			},
+		},
+	},
+	{
+		Name: "pfr_map_player",
+		Urls: []string{"https://www.pro-football-reference.com/players/{letter}"},
+		Keys: []string{"letter"},
+		Parser: []Parser{
+			{
+				Label: "players",
+				Regex: []Regex{
+					{Name: "(?ms)<div class=.section_content. id=.div_players.>.*?<\\/div>"},
+					{Name: "<p>.*?<a href=.(?P<url>(.*?)).>(?P<name>(.*?))<\\/a>(.*?)\\((?P<pos>(.*?))\\)(.*?)(?P<rookie_year>([0-9]{4}))-(?P<last_year>([0-9]{4})).*?<\\/p>"},
 				},
 			},
 		},
@@ -146,57 +245,6 @@ var CONFIG_LIST = []Config{
 				Regex: []Regex{
 					{Name: "(?ms)<caption>Full Play-By-Play.*?<\\/caption>.*?<\\/table>"},
 					{Name: "<th.*?>(?P<quarter>(.*?))<\\/th><td.*?>(?P<time>(.*?))<\\/td><td.*?>(?P<down>(.*?))<\\/td><td.*?>(?P<distance>(.*?))<\\/td><td.*?>(?P<location>(.*?))<\\/td><td.*?>(?P<description>(.*?))<\\/td>"},
-				},
-			},
-		},
-	},
-	{
-		Name: "wiki_movie_info",
-		Urls: []string{},
-		Keys: []string{"title", "year"},
-		Parser: []Parser{
-			{
-				Label: "producer",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>Produced by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<producer>(.*?))<\\/a>"},
-				},
-			}, {
-				Label: "director",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>Directed by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<director>(.*?))<\\/a>"},
-				},
-			}, {
-				Label: "screenplay",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>Screenplay by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<writer>(.*?))<\\/a>"},
-				},
-			}, {
-				Label: "cast",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>Starring<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<actor>(.*?))<\\/a>"},
-				},
-			}, {
-				Label: "score",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>Music by<\\/th><td[^>]+>.*?<\\/td><\\/tr>"},
-					{Name: "<a.href=\"(?P<url>(.*?))\"[^>]+>(?P<artist>(.*?))<\\/a>"},
-				},
-			}, {
-				Label: "releaseDate",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>.*?Release date.*?<\\/th>.*?<\\/tr>"},
-					{Name: "<span[^>]+>(?P<releaseDate>(\\d{4}-\\d{2}-\\d{2}))<\\/span>"},
-				},
-			},
-			{
-				Label: "runtime",
-				Regex: []Regex{
-					{Name: "(?ms)<tr><th[^>]+>.*?Running time.*?<\\/th>.*?<\\/tr>"},
-					{Name: "<td[^>]+>(?P<length>(\\d+)).minutes.*?<\\/td>"},
 				},
 			},
 		},

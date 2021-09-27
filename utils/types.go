@@ -6,7 +6,7 @@ package utils
 type Response struct {
 	Url    string
 	Type   string
-	Status string
+	Status int
 	Data   string
 	Error  string
 }

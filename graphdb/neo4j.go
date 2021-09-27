@@ -3,10 +3,13 @@ package graphdb
 import (
 	"fmt"
 	"log"
+	"regexp"
 
 	"github.com/joshwi/go-utils/parser"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
+
+var regexp_1 = regexp.MustCompile(`"`)
 
 func Connect(url string, username string, password string) neo4j.Driver {
 
@@ -61,8 +64,10 @@ func PostNode(session neo4j.Session, node string, label string, properties []par
 	cypher := `CREATE (n: ` + node + ` { label: "` + label + `" })`
 
 	for _, item := range properties {
-		cypher += ` SET n.` + item.Name + ` = "` + item.Value + `"`
+		cypher += ` SET n.` + item.Name + ` = "` + regexp_1.ReplaceAllString(item.Value, "\\'") + `"`
 	}
+
+	// cypher = regexp_1.ReplaceAllString(cypher, "'")
 
 	result, err := session.Run(cypher, map[string]interface{}{})
 	if err != nil {
@@ -82,7 +87,7 @@ func PutNode(session neo4j.Session, node string, label string, properties []pars
 	cypher := `MERGE (n: ` + node + ` { label: "` + label + `" })`
 
 	for _, item := range properties {
-		cypher += ` SET n.` + item.Name + ` = "` + item.Value + `"`
+		cypher += ` SET n.` + item.Name + ` = "` + regexp_1.ReplaceAllString(item.Value, "\\'") + `"`
 	}
 
 	result, err := session.Run(cypher, map[string]interface{}{})
@@ -91,6 +96,9 @@ func PutNode(session neo4j.Session, node string, label string, properties []pars
 	}
 
 	summary, err := result.Summary()
+	if err != nil {
+		log.Println(err)
+	}
 
 	counters := summary.Counters()
 

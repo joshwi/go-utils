@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/joshwi/go-utils/graphdb"
 	"github.com/joshwi/go-utils/parser"
@@ -14,7 +15,11 @@ import (
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-func ComputeUrl(query map[string]string, urls []string, keys []string) []string {
+var regexp_1 = regexp.MustCompile(`\s+`)
+var regexp_2 = regexp.MustCompile(`[^a-zA-Z\d]+`)
+var regexp_3 = regexp.MustCompile(`\_{2,}`)
+
+func InitJob(query map[string]string, urls []string, keys []string) []string {
 	output := []string{}
 
 	for _, url := range urls {
@@ -35,7 +40,7 @@ func RunJob(query map[string]string, urls []string, config parser.Config) (strin
 	for _, url := range urls {
 
 		response := utils.Get(url)
-		if response.Status == "200 OK" {
+		if response.Status == 200 {
 			text = response.Data
 			break
 		}
@@ -55,18 +60,24 @@ func RunJob(query map[string]string, urls []string, config parser.Config) (strin
 
 	// Add query parameters to output Tags
 	for n := range keys {
-		if len(label) == 0 {
-			label += query[keys[n]]
-		} else {
-			label += `_` + query[keys[n]]
+		if !strings.Contains(keys[n], "url") {
+			if len(label) == 0 {
+				label += query[keys[n]]
+			} else {
+				label += `_` + query[keys[n]]
+			}
 		}
 		output.Tags = append(output.Tags, parser.Tag{Name: keys[n], Value: query[keys[n]]})
 	}
 
+	label = regexp_1.ReplaceAllString(label, "_")
+	label = regexp_2.ReplaceAllString(label, "_")
+	label = regexp_3.ReplaceAllString(label, "_")
+
 	return label, bucket, output
 }
 
-func StoreResults(driver neo4j.Session, label string, bucket string, data parser.Output) {
+func StoreDB(driver neo4j.Session, label string, bucket string, data parser.Output) {
 	for _, item := range data.Collections {
 		for n, entry := range item.Value {
 			properties := []parser.Tag{}
@@ -127,15 +138,15 @@ func main() {
 			params[item.Name] = item.Value
 		}
 
-		urls := ComputeUrl(params, config.Urls, config.Keys)
+		urls := InitJob(params, config.Urls, config.Keys)
 
 		_, _, data := RunJob(params, urls, config)
 
-		log.Println(data)
+		// log.Println(data)
 
-		// label, bucket, data := RunJob(params, urls, config)
+		label, bucket, data := RunJob(params, urls, config)
 
-		// StoreResults(session, label, bucket, data)
+		StoreDB(session, label, bucket, data)
 
 	}
 

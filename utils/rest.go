@@ -34,7 +34,7 @@ func Get(url string) Response {
 		errorString = string(err.Error())
 	}
 
-	output := Response{Url: url, Type: "GET", Status: string(resp.Status), Data: string(body), Error: errorString}
+	output := Response{Url: url, Type: "GET", Status: resp.StatusCode, Data: string(body), Error: errorString}
 
 	return output
 }
