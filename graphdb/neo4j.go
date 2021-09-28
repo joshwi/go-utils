@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"regexp"
+	"strconv"
 
 	"github.com/joshwi/go-utils/parser"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
@@ -104,6 +105,20 @@ func PutNode(session neo4j.Session, node string, label string, properties []pars
 
 	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
 
+}
+
+func StoreDB(session neo4j.Session, label string, bucket string, data parser.Output) {
+	for _, item := range data.Collections {
+		for n, entry := range item.Value {
+			properties := []parser.Tag{}
+			properties = append(properties, data.Tags...)
+			properties = append(properties, entry...)
+			new_bucket := bucket + "_" + item.Name
+			new_label := label + "_" + strconv.Itoa(n+1)
+
+			PutNode(session, new_bucket, new_label, properties)
+		}
+	}
 }
 
 // func DeleteNode(driver string, node string, label string) {

@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Name   string
 	Urls   []string
+	Params []string
 	Keys   []string
 	Parser []Parser
 }

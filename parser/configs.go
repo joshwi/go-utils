@@ -2,43 +2,36 @@ package parser
 
 var CONFIG_LIST = []Config{
 	{
-		Name: "wiki_film",
-		Urls: []string{"https://en.wikipedia.org/wiki/Lists_of_American_films"},
-		Keys: []string{},
+		Name:   "wiki_film",
+		Urls:   []string{"https://en.wikipedia.org/wiki/Lists_of_American_films"},
+		Params: []string{},
 		Parser: []Parser{
 			{
 				Label: "year",
 				Regex: []Regex{
-					{Name: "(?ms)<li><a href=.(?P<url>(.*?)). title=.List of American films of \\d{4}.>List of American films of (?P<year>(\\d{4}))<\\/a><\\/li>"},
+					{Name: "(?ms)<li><a href=\"(?P<url>([\\/[\\w+]+))\" title=\"List of American films of (?P<year>(\\d{4}))\">"},
 				},
 			},
 		},
 	},
 	{
-		Name: "wiki_film_year",
-		Urls: []string{"https://en.wikipedia.org/wiki/List_of_American_films_of_{year}"},
-		Keys: []string{"year"},
+		Name:   "wiki_film_year",
+		Urls:   []string{"https://en.wikipedia.org/wiki/List_of_American_films_of_{year}"},
+		Params: []string{"year"},
 		Parser: []Parser{
 			{
 				Label: "movie",
 				Regex: []Regex{
-					{Name: "(?ms)<tbody>.*?Opening.*?Title.*?Production company.*?Cast and crew.*?<\\/tbody>"},
-					{Name: "(?ms)<td><i><a href=\"(?P<url>(\\/wiki\\/.*?))\".*?title=\"(?P<title>(.*?))\">"},
-				},
-			},
-			{
-				Label: "movie",
-				Regex: []Regex{
-					{Name: "(?ms)<tbody>.*?Title.*?Director.*?Cast.*?Genre.*?Note.*?<\\/tbody>"},
-					{Name: "(?ms)<td><i><a href=\"(?P<url>(\\/wiki\\/.*?))\".*?title=\"(?P<title>(.*?))\">"},
+					{Name: "(?ms)<tbody>.*<\\/tbody>"},
+					{Name: "(?ms)<td><i><a href=\"(?P<url>([\\/[\\w+]+))\".*?>(?P<title>(.*?))<\\/a><\\/i>"},
 				},
 			},
 		},
 	},
 	{
-		Name: "wiki_movie",
-		Urls: []string{"https://en.wikipedia.org{url}"},
-		Keys: []string{"url"},
+		Name:   "wiki_movie",
+		Urls:   []string{"https://en.wikipedia.org{url}"},
+		Params: []string{"url"},
 		Parser: []Parser{
 			{
 				Label: "producer",
@@ -87,9 +80,9 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
-		Name: "pfr_map_team",
-		Urls: []string{"https://www.pro-football-reference.com/teams"},
-		Keys: []string{},
+		Name:   "pfr_map_team",
+		Urls:   []string{"https://www.pro-football-reference.com/teams"},
+		Params: []string{},
 		Parser: []Parser{
 			{
 				Label: "teams",
@@ -101,9 +94,9 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
-		Name: "pfr_map_player",
-		Urls: []string{"https://www.pro-football-reference.com/players/{letter}"},
-		Keys: []string{"letter"},
+		Name:   "pfr_map_player",
+		Urls:   []string{"https://www.pro-football-reference.com/players/{letter}"},
+		Params: []string{"letter"},
 		Parser: []Parser{
 			{
 				Label: "players",
@@ -115,9 +108,9 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
-		Name: "pfr_team_season",
-		Urls: []string{"https://www.pro-football-reference.com/teams/{tag}/{year}.htm"},
-		Keys: []string{"tag", "year"},
+		Name:   "pfr_team_season",
+		Urls:   []string{"https://www.pro-football-reference.com/teams/{tag}/{year}.htm"},
+		Params: []string{"tag", "year"},
 		Parser: []Parser{
 			{
 				Label: "",
@@ -187,9 +180,9 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
-		Name: "pfr_season_draft",
-		Urls: []string{"https://www.pro-football-reference.com/years/{year}/draft.htm"},
-		Keys: []string{"year"},
+		Name:   "pfr_season_draft",
+		Urls:   []string{"https://www.pro-football-reference.com/years/{year}/draft.htm"},
+		Params: []string{"year"},
 		Parser: []Parser{
 			{
 				Label: "picks",
@@ -201,9 +194,9 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
-		Name: "pfr_boxscore_games",
-		Urls: []string{"https://www.pro-football-reference.com/boxscores/{id}.htm"},
-		Keys: []string{"id"},
+		Name:   "pfr_boxscore_games",
+		Urls:   []string{"https://www.pro-football-reference.com/boxscores/{id}.htm"},
+		Params: []string{"id"},
 		Parser: []Parser{
 			{
 				Label: "officials",
@@ -250,9 +243,9 @@ var CONFIG_LIST = []Config{
 		},
 	},
 	{
-		Name: "genius_song_lyrics",
-		Urls: []string{},
-		Keys: []string{},
+		Name:   "genius_song_lyrics",
+		Urls:   []string{},
+		Params: []string{},
 		Parser: []Parser{
 			{
 				Label: "",

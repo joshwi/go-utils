@@ -2,12 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
-	"regexp"
-	"sort"
-	"strconv"
-	"strings"
 
 	"github.com/joshwi/go-utils/graphdb"
 	"github.com/joshwi/go-utils/parser"
@@ -15,95 +10,44 @@ import (
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-var regexp_1 = regexp.MustCompile(`\s+`)
-var regexp_2 = regexp.MustCompile(`[^a-zA-Z\d]+`)
-var regexp_3 = regexp.MustCompile(`\_{2,}`)
+func RunScript(session neo4j.Session, entry []parser.Tag, config parser.Config) {
 
-func InitJob(query map[string]string, urls []string, keys []string) []string {
-	output := []string{}
+	// Convert params from struct [][]parser.Tag -> map[string]string
+	params := map[string]string{}
 
-	for _, url := range urls {
-		for _, key := range keys {
-			re, _ := regexp.Compile(fmt.Sprintf("{%v}", key))
-			url = re.ReplaceAllString(url, query[key])
-		}
-		output = append(output, url)
+	for _, item := range entry {
+		params[item.Name] = item.Value
 	}
 
-	return output
-}
+	// Add params to search urls
+	urls := parser.AddParams(params, config.Urls, config.Params)
 
-func RunJob(query map[string]string, urls []string, config parser.Config) (string, string, parser.Output) {
+	// Run GET request and parsing collection
+	label, bucket, data := parser.RunJob(params, urls, config)
 
-	text := ``
+	// Send output data to Neo4j
+	graphdb.StoreDB(session, label, bucket, data)
 
-	for _, url := range urls {
-
-		response := utils.Get(url)
-		if response.Status == 200 {
-			text = response.Data
-			break
-		}
-	}
-
-	label := ``
-	bucket := config.Name
-
-	output := parser.Collect(text, config.Parser)
-
-	//Sort keys alphabetically
-	keys := make([]string, 0, len(query))
-	for k := range query {
-		keys = append(keys, k)
-	}
-	sort.Strings(keys)
-
-	// Add query parameters to output Tags
-	for n := range keys {
-		if !strings.Contains(keys[n], "url") {
-			if len(label) == 0 {
-				label += query[keys[n]]
-			} else {
-				label += `_` + query[keys[n]]
-			}
-		}
-		output.Tags = append(output.Tags, parser.Tag{Name: keys[n], Value: query[keys[n]]})
-	}
-
-	label = regexp_1.ReplaceAllString(label, "_")
-	label = regexp_2.ReplaceAllString(label, "_")
-	label = regexp_3.ReplaceAllString(label, "_")
-
-	return label, bucket, output
-}
-
-func StoreDB(driver neo4j.Session, label string, bucket string, data parser.Output) {
-	for _, item := range data.Collections {
-		for n, entry := range item.Value {
-			properties := []parser.Tag{}
-			properties = append(properties, data.Tags...)
-			properties = append(properties, entry...)
-			new_bucket := bucket + "_" + item.Name
-			new_label := label + "_" + strconv.Itoa(n+1)
-			graphdb.PutNode(driver, new_bucket, new_label, properties)
-		}
-	}
 }
 
 func main() {
 
+	// Init flag values
 	var query string
 	var name string
 
-	// flags declaration using flag package
+	// Define flag arguments for the application
 	flag.StringVar(&query, `q`, ``, `Specify config. Default: <empty>`)
 	flag.StringVar(&name, `c`, `pfr_team_season`, `Specify config. Default: pfr_team_season`)
 	flag.Parse()
 
+	// Pull in env variables: username, password, uri
 	username := utils.Env("NEO4J_USERNAME")
 	password := utils.Env("NEO4J_PASSWORD")
 	host := utils.Env("NEO4J_SERVICE_HOST")
 	port := utils.Env("NEO4J_SERVICE_PORT")
+
+	// Create application session with Neo4j
 	uri := "bolt://" + host + ":" + port
 	driver := graphdb.Connect(uri, username, password)
 	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
@@ -112,7 +56,8 @@ func main() {
 		log.Println(err)
 	}
 
-	config := parser.Config{Name: "", Urls: []string{}, Keys: []string{}, Parser: []parser.Parser{}}
+	// Find parsing config requested by user
+	config := parser.Config{Name: "", Urls: []string{}, Params: []string{}, Parser: []parser.Parser{}}
 
 	for _, item := range parser.CONFIG_LIST {
 		if name == item.Name {
@@ -120,34 +65,26 @@ func main() {
 		}
 	}
 
+	// Compile parser config into regexp
 	config.Parser = parser.Compile(config.Parser)
 
-	inputs := [][]parser.Tag{{
-		parser.Tag{Name: "name", Value: config.Name},
-	}}
+	// Grab input parameters from  Neo4j
+	inputs := [][]parser.Tag{{parser.Tag{Name: "name", Value: config.Name}}}
 
 	if len(query) > 0 {
 		inputs = graphdb.RunCypher(session, query)
 	}
 
+	// var wg sync.WaitGroup
+
 	for _, entry := range inputs {
 
-		params := map[string]string{}
-
-		for _, item := range entry {
-			params[item.Name] = item.Value
-		}
-
-		urls := InitJob(params, config.Urls, config.Keys)
-
-		_, _, data := RunJob(params, urls, config)
-
-		// log.Println(data)
-
-		label, bucket, data := RunJob(params, urls, config)
-
-		StoreDB(session, label, bucket, data)
+		// wg.Add(1)
+		RunScript(session, entry, config)
+		// go RunScript(session, entry, config)
 
 	}
+
+	// wg.Wait()
 
 }
