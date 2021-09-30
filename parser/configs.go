@@ -23,7 +23,7 @@ var CONFIG_LIST = []Config{
 				Label: "movie",
 				Regex: []Regex{
 					{Name: "(?ms)<tbody>.*<\\/tbody>"},
-					{Name: "(?ms)<td><i><a href=\"(?P<url>([\\/[\\w+]+))\".*?>(?P<title>(.*?))<\\/a><\\/i>"},
+					{Name: "(?ms)<td><i><a href=\"(?P<url>((\\/[^\\s\\n]+)+))\".*?>(?P<title>(.*?))<\\/a><\\/i>"},
 				},
 			},
 		},
@@ -89,6 +89,20 @@ var CONFIG_LIST = []Config{
 				Regex: []Regex{
 					{Name: "(?ms)<div class=.table_container. id=.div_teams_active.>.*?<\\/table>"},
 					{Name: "<th[^>]+><a href=.\\/teams\\/(?P<tag>(.*?))\\/.>(?P<team>(.*?))<\\/a><\\/th><td[^>]+>(?P<year_min>(.*?))<\\/td><td[^>]+>(?P<year_max>(.*?))<\\/td><td[^>]+>(?P<win>(.*?))<\\/td><td[^>]+>(?P<loss>(.*?))<\\/td><td[^>]+>(?P<tie>(.*?))<\\/td><td[^>]+>(?P<win_perc>(.*?))<\\/td><td[^>]+><a href=.(?P<top_player_url>(.*?)). title[^>]+>(?P<top_player>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_pass_url>(.*?)). title[^>]+>(?P<top_pass>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_rush_url>(.*?)). title[^>]+>(?P<top_rush>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_rec_url>(.*?)). title[^>]+>(?P<top_rec>(.*?))<\\/a><\\/td><td[^>]+><a href=.(?P<top_coach_url>(.*?)). title[^>]+>(?P<top_coach>(.*?))<\\/a><\\/td><td[^>]+>(?P<playoff_yrs>(.*?))<\\/td><td[^>]+>(?P<playoff_win>(.*?))<\\/td><td[^>]+>(?P<playoff_loss>(.*?))<\\/td><td[^>]+>(?P<playoff_perc>(.*?))<\\/td><td[^>]+>(?P<champs>(.*?))<\\/td><td[^>]+>(?P<sb_champs>(.*?))<\\/td><td[^>]+>(?P<conf_champs>(.*?))<\\/td><td[^>]+>(?P<div_champs>(.*?))<\\/td>"},
+				},
+			},
+		},
+	},
+	{
+		Name:   "pfr_map_season",
+		Urls:   []string{"https://www.pro-football-reference.com/years"},
+		Params: []string{},
+		Parser: []Parser{
+			{
+				Label: "years",
+				Regex: []Regex{
+					{Name: "(?ms)<div class=\"table_container\" id=\"div_years\">.*?<\\/table>"},
+					{Name: "<th.*?><a href=\"(?P<url>(\\/years\\/\\d{4}\\/))\">(?P<year>(\\d{4}))<\\/a><\\/th>"},
 				},
 			},
 		},

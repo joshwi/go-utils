@@ -6,14 +6,6 @@ import (
 	"net/http"
 )
 
-// type Response struct {
-// 	Url    string
-// 	Type   string
-// 	Status string
-// 	Data   string
-// 	Error  string
-// }
-
 func Get(url string) Response {
 
 	errorString := ""
@@ -21,8 +13,8 @@ func Get(url string) Response {
 	resp, err := http.Get(url)
 
 	if err != nil {
-		log.Fatal(err)
 		errorString = string(err.Error())
+		log.Println(errorString)
 	}
 
 	defer resp.Body.Close()
@@ -30,8 +22,8 @@ func Get(url string) Response {
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		log.Fatal(err)
 		errorString = string(err.Error())
+		log.Println(errorString)
 	}
 
 	output := Response{Url: url, Type: "GET", Status: resp.StatusCode, Data: string(body), Error: errorString}

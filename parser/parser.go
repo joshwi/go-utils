@@ -1,13 +1,12 @@
 package parser
 
 import (
-	"log"
 	"regexp"
 )
 
 func Compile(parser []Parser) []Parser {
 
-	log.Println(`[ Function: Compile ] [ Start ]`)
+	// log.Println(`[ Function: Compile ] [ Start ]`)
 
 	output := []Parser{}
 
@@ -22,7 +21,7 @@ func Compile(parser []Parser) []Parser {
 		output = append(output, parser)
 	}
 
-	log.Println(`[ Function: Compile ] [ Finish ]`)
+	// log.Println(`[ Function: Compile ] [ Finish ]`)
 
 	return output
 
@@ -30,7 +29,7 @@ func Compile(parser []Parser) []Parser {
 
 func Collect(text string, parsers []Parser) Output {
 
-	log.Println(`[ Function: Collect ] [ Start ]`)
+	// log.Println(`[ Function: Collect ] [ Start ]`)
 
 	output := Output{}
 
@@ -40,7 +39,7 @@ func Collect(text string, parsers []Parser) Output {
 		output.Collections = append(output.Collections, input.Collections...)
 	}
 
-	log.Println(`[ Function: Collect ] [ Finish ]`)
+	// log.Println(`[ Function: Collect ] [ Finish ]`)
 
 	return output
 

@@ -5,6 +5,7 @@ import (
 	"log"
 	"regexp"
 	"strconv"
+	"sync"
 
 	"github.com/joshwi/go-utils/parser"
 	"github.com/neo4j/neo4j-go-driver/neo4j"
@@ -60,7 +61,7 @@ func RunCypher(session neo4j.Session, query string) [][]parser.Tag {
 // 	return [][]parser.Tag{}
 // }
 
-func PostNode(session neo4j.Session, node string, label string, properties []parser.Tag) {
+func PostNode(session neo4j.Session, node string, label string, properties []parser.Tag) string {
 
 	cypher := `CREATE (n: ` + node + ` { label: "` + label + `" })`
 
@@ -79,11 +80,14 @@ func PostNode(session neo4j.Session, node string, label string, properties []par
 
 	counters := summary.Counters()
 
-	log.Println(fmt.Sprintf(`[ Function: PostNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
+	output := fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet())
 
+	log.Println(output)
+
+	return output
 }
 
-func PutNode(session neo4j.Session, node string, label string, properties []parser.Tag) {
+func PutNode(session neo4j.Session, node string, label string, properties []parser.Tag) string {
 
 	cypher := `MERGE (n: ` + node + ` { label: "` + label + `" })`
 
@@ -103,11 +107,24 @@ func PutNode(session neo4j.Session, node string, label string, properties []pars
 
 	counters := summary.Counters()
 
-	log.Println(fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet()))
+	output := fmt.Sprintf(`[ Function: PutNode ] [ Label: %v ] [ Node: %v ] [ Properties Set: %v ]`, label, node, counters.PropertiesSet())
+
+	log.Println(output)
+
+	return output
 
 }
 
-func StoreDB(session neo4j.Session, label string, bucket string, data parser.Output) {
+func StoreDB(driver neo4j.Driver, label string, bucket string, data parser.Output, wg *sync.WaitGroup) {
+
+	defer wg.Done()
+
+	sessionConfig := neo4j.SessionConfig{AccessMode: neo4j.AccessModeWrite}
+	session, err := driver.NewSession(sessionConfig)
+	if err != nil {
+		log.Println(err)
+	}
+
 	for _, item := range data.Collections {
 		for n, entry := range item.Value {
 			properties := []parser.Tag{}
@@ -115,10 +132,11 @@ func StoreDB(session neo4j.Session, label string, bucket string, data parser.Out
 			properties = append(properties, entry...)
 			new_bucket := bucket + "_" + item.Name
 			new_label := label + "_" + strconv.Itoa(n+1)
-
 			PutNode(session, new_bucket, new_label, properties)
 		}
 	}
+
+	session.Close()
 }
 
 // func DeleteNode(driver string, node string, label string) {

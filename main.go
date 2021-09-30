@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"log"
+	"sync"
 
 	"github.com/joshwi/go-utils/graphdb"
 	"github.com/joshwi/go-utils/parser"
@@ -10,7 +11,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-func RunScript(session neo4j.Session, entry []parser.Tag, config parser.Config) {
+func RunScript(driver neo4j.Driver, entry []parser.Tag, config parser.Config, wg *sync.WaitGroup) {
 
 	// Convert params from struct [][]parser.Tag -> map[string]string
 	params := map[string]string{}
@@ -26,7 +27,7 @@ func RunScript(session neo4j.Session, entry []parser.Tag, config parser.Config) 
 	label, bucket, data := parser.RunJob(params, urls, config)
 
 	// Send output data to Neo4j
-	graphdb.StoreDB(session, label, bucket, data)
+	graphdb.StoreDB(driver, label, bucket, data, wg)
 
 }
 
@@ -75,16 +76,20 @@ func main() {
 		inputs = graphdb.RunCypher(session, query)
 	}
 
-	// var wg sync.WaitGroup
+	log.Println("START")
+
+	var wg sync.WaitGroup
 
 	for _, entry := range inputs {
 
-		// wg.Add(1)
-		RunScript(session, entry, config)
-		// go RunScript(session, entry, config)
+		wg.Add(1)
+
+		go RunScript(driver, entry, config, &wg)
 
 	}
 
-	// wg.Wait()
+	wg.Wait()
+
+	log.Println("DONE")
 
 }
