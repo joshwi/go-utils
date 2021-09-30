@@ -76,7 +76,7 @@ func main() {
 		inputs = graphdb.RunCypher(session, query)
 	}
 
-	log.Println("START")
+	log.Println("COLLECTION - START")
 
 	var wg sync.WaitGroup
 
@@ -90,6 +90,6 @@ func main() {
 
 	wg.Wait()
 
-	log.Println("DONE")
+	log.Println("COLLECTION - DONE")
 
 }

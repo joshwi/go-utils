@@ -22,7 +22,7 @@
 
 ## Setup
 
-### Installation and Use
+### Build Executable
 
 1. Use go package manager to get go-utils: 
 ```
@@ -39,27 +39,20 @@ nano .env
 ```
 4. Paste environment variables in file
 ```
-NEO4J_URL=<neo4j_url>
-NEO4J_USERNAME=<neo4j_username>
-NEO4J_PASSWORD=<neo4j_password>
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=password123
+NEO4J_SERVICE_HOST=localhost
+NEO4J_SERVICE_PORT=7687
 ```
-5. Build main.go into executable
+5. Build go code into executable
 ```
-go build main.go
+go build -o mycollector
 ```
-6. Open cronjob editor
-```
-crontab -e
-```
-7. Create job for collection script
-```
-*/1 * * * * /path/to/repo/main > /path/to/repo/output.log
-```
+6. Run the collector
 
-Examples
-
+Example: Get all games from 2020 NFL Season
 ```
-go run main.go -c='wiki_film'
-go run main.go -c='wiki_film_year' -q='MATCH (n:wiki_film_year) RETURN DISTINCT n.url as url, n.year as year'
-go run main.go -c='wiki_movie' -q='MATCH (n:wiki_film_year_movie) WHERE n.year=~"199.*" RETURN DISTINCT n.url as url, n.title as title, n.year as year'
+./mycollector -c='pfr_map_team'
+./mycollector -c='pfr_map_season'
+./mycollector -c='pfr_team_season' -q='MATCH (n:pfr_map_team_teams),(m:pfr_map_season_years) WHERE m.year="2020" RETURN DISTINCT n.tag as tag, m.year as year'
 ```
