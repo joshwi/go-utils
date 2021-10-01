@@ -23,7 +23,7 @@ var CONFIG_LIST = []Config{
 				Label: "movie",
 				Regex: []Regex{
 					{Name: "(?ms)<tbody>.*<\\/tbody>"},
-					{Name: "(?ms)<td><i><a href=\"(?P<url>((\\/[^\\s\\n]+)+))\".*?>(?P<title>(.*?))<\\/a><\\/i>"},
+					{Name: "(?ms)<td><i><a href=\"(?P<url>((\\/[^\\s\\n]+)+))\" title=\".*?\">(?P<title>(.*?))<\\/a>\\s{0,}<\\/i>\\s{0,}<\\/td>"},
 				},
 			},
 		},

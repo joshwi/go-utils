@@ -92,4 +92,6 @@ func main() {
 
 	log.Println("COLLECTION - DONE")
 
+	// session.Close()
+
 }

@@ -15,9 +15,9 @@ func Get(url string) Response {
 	if err != nil {
 		errorString = string(err.Error())
 		log.Println(errorString)
+		output := Response{Url: url, Type: "GET", Status: 404, Data: "", Error: errorString}
+		return output
 	}
-
-	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 
