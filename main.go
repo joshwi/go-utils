@@ -27,7 +27,7 @@ func RunScript(driver neo4j.Driver, entry []parser.Tag, config parser.Config, wg
 	label, bucket, data := parser.RunJob(params, urls, config)
 
 	// Send output data to Neo4j
-	graphdb.StoreDB(driver, label, bucket, data, wg)
+	graphdb.StoreDB(driver, params, label, bucket, data, wg)
 
 }
 
