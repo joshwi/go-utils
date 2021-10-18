@@ -175,20 +175,27 @@ var CONFIG_LIST = []Config{
 			{
 				Label: "",
 				Regex: []Regex{
-					{Name: "(?ms)<p><strong>Offensive Scheme:<\\/strong>.*?(?P<offense>(.*?)).*?<\\/p>"},
+					{Name: "(?ms)<p><strong>Offensive Scheme:<\\/strong>.*?(?P<off>(.*?)).*?<\\/p>"},
 				},
 			},
 			{
 				Label: "",
 				Regex: []Regex{
-					{Name: "(?ms)<p><strong>Defensive Alignment:<\\/strong>.*?(?P<defense>(.*?)).*?<\\/p>"},
+					{Name: "(?ms)<p><strong>Defensive Alignment:<\\/strong>.*?(?P<def>(.*?)).*?<\\/p>"},
 				},
 			},
+			// {
+			// 	Label: "games",
+			// 	Regex: []Regex{
+			// 		{Name: "(?ms)<caption>Schedule.*?Game.*?<\\/caption>.*?<\\/table>"},
+			// 		{Name: "<tr.*?><th.*?>(?P<week>(.*?))<\\/th><td.*?>(?P<day>(.*?))<\\/td><td.*?>(?P<date>(.*?))<\\/td><td.*?>(?P<time>(.*?))<\\/td><td.*?><a href=.(?P<url>(.*?)).>boxscore<\\/a><\\/td><td.*?>(?P<wlt>(.*?))<\\/td><td.*?>(?P<overtime>(.*?))<\\/td><td.*?>(?P<record>(.*?))<\\/td><td.*?>(?P<homeAway>(.*?))<\\/td><td.*?><a.*?>(?P<opponent>(.*?))<\\/a><\\/td><td.*?>(?P<score>(.*?))<\\/td><td.*?>(?P<opponentScore>(.*?))<\\/td><td.*?>(?P<firstDown>(.*?))<\\/td><td.*?>(?P<totalYds>(.*?))<\\/td><td.*?>(?P<passYds>(.*?))<\\/td><td.*?>(?P<rushYds>(.*?))<\\/td><td.*?>(?P<turnovers>(.*?))<\\/td><td.*?>(?P<opponentFirstDowns>(.*?))<\\/td><td.*?>(?P<opponentTotYds>(.*?))<\\/td><td.*?>(?P<opponentPassYds>(.*?))<\\/td><td.*?>(?P<opponentRushYds>(.*?))<\\/td><td.*?>(?P<opponentTurnovers>(.*?))<\\/td><td.*?>(?P<expOffPts>(.*?))<\\/td><td.*?>(?P<expDefPts>(.*?))<\\/td><td.*?>(?P<expSpTeamsPts>(.*?))<\\/td>.*?<\\/tr>"},
+			// 	},
+			// },
 			{
 				Label: "games",
 				Regex: []Regex{
 					{Name: "(?ms)<caption>Schedule.*?Game.*?<\\/caption>.*?<\\/table>"},
-					{Name: "<tr.*?><th.*?>(?P<week>(.*?))<\\/th><td.*?>(?P<day>(.*?))<\\/td><td.*?>(?P<date>(.*?))<\\/td><td.*?>(?P<time>(.*?))<\\/td><td.*?><a href=.(?P<url>(.*?)).>boxscore<\\/a><\\/td><td.*?>(?P<wlt>(.*?))<\\/td><td.*?>(?P<overtime>(.*?))<\\/td><td.*?>(?P<record>(.*?))<\\/td><td.*?>(?P<homeAway>(.*?))<\\/td><td.*?><a.*?>(?P<opponent>(.*?))<\\/a><\\/td><td.*?>(?P<score>(.*?))<\\/td><td.*?>(?P<opponentScore>(.*?))<\\/td><td.*?>(?P<firstDown>(.*?))<\\/td><td.*?>(?P<totalYds>(.*?))<\\/td><td.*?>(?P<passYds>(.*?))<\\/td><td.*?>(?P<rushYds>(.*?))<\\/td><td.*?>(?P<turnovers>(.*?))<\\/td><td.*?>(?P<opponentFirstDowns>(.*?))<\\/td><td.*?>(?P<opponentTotYds>(.*?))<\\/td><td.*?>(?P<opponentPassYds>(.*?))<\\/td><td.*?>(?P<opponentRushYds>(.*?))<\\/td><td.*?>(?P<opponentTurnovers>(.*?))<\\/td><td.*?>(?P<expOffPts>(.*?))<\\/td><td.*?>(?P<expDefPts>(.*?))<\\/td><td.*?>(?P<expSpTeamsPts>(.*?))<\\/td>.*?<\\/tr>"},
+					{Name: "<tr.*?><th.*?>(?P<week>(.*?))<\\/th><td.*?>(?P<day>(.*?))<\\/td><td.*?>(?P<date>(.*?))<\\/td><td.*?>(?P<time>(.*?))<\\/td><td.*?><a href=.(?P<url>(.*?)).>boxscore<\\/a><\\/td><td.*?>(?P<wlt>(.*?))<\\/td><td.*?>(?P<ot>(.*?))<\\/td><td.*?>(?P<record>(.*?))<\\/td><td.*?>(?P<home_away>(.*?))<\\/td><td.*?><a.*?>(?P<opp>(.*?))<\\/a><\\/td><td.*?>(?P<score>(.*?))<\\/td><td.*?>(?P<opp_score>(.*?))<\\/td><td.*?>(?P<first_downs>(.*?))<\\/td><td.*?>(?P<tot_yds>(.*?))<\\/td><td.*?>(?P<pass_yds>(.*?))<\\/td><td.*?>(?P<rush_yds>(.*?))<\\/td><td.*?>(?P<to>(.*?))<\\/td><td.*?>(?P<opp_first_downs>(.*?))<\\/td><td.*?>(?P<opp_tot_yds>(.*?))<\\/td><td.*?>(?P<opp_pass_yds>(.*?))<\\/td><td.*?>(?P<opp_rush_yds>(.*?))<\\/td><td.*?>(?P<opp_to>(.*?))<\\/td><td.*?>(?P<exp_off_pts>(.*?))<\\/td><td.*?>(?P<exp_def_pts>(.*?))<\\/td><td.*?>(?P<exp_spt_pts>(.*?))<\\/td>.*?<\\/tr>"},
 				},
 			},
 		},
