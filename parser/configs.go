@@ -1,8 +1,6 @@
 package parser
 
-import (
-	"github.com/joshwi/go-utils/utils"
-)
+import "github.com/joshwi/go-utils/utils"
 
 var CONFIG_LIST = []utils.Config{
 	{
