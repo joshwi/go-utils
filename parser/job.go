@@ -44,7 +44,7 @@ func RunJob(query map[string]string, urls []string, config utils.Config) (string
 	label := ``
 	bucket := config.Name
 
-	output := utils.Collect(text, config.Parser)
+	output := Collect(text, config.Parser)
 
 	//Sort keys alphabetically
 	keys := make([]string, 0, len(query))
@@ -62,10 +62,10 @@ func RunJob(query map[string]string, urls []string, config utils.Config) (string
 				label += `_` + query[keys[n]]
 			}
 		}
-		output.Tags = append(output.Tags, Tag{Name: keys[n], Value: query[keys[n]]})
+		output.Tags = append(output.Tags, utils.Tag{Name: keys[n], Value: query[keys[n]]})
 	}
 
-	output.Tags = append(output.Tags, Tag{Name: "timeutc", Value: time.Now().Format(time.RFC3339)})
+	output.Tags = append(output.Tags, utils.Tag{Name: "timeutc", Value: time.Now().Format(time.RFC3339)})
 
 	label = regexp_1.ReplaceAllString(label, "_")
 	label = regexp_2.ReplaceAllString(label, "_")

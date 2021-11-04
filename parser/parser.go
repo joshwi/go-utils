@@ -29,11 +29,11 @@ func Compile(parser []utils.Parser) []utils.Parser {
 
 }
 
-func Collect(text string, parsers []utils.Parser) Output {
+func Collect(text string, parsers []utils.Parser) utils.Output {
 
 	// log.Println(`[ Function: Collect ] [ Start ]`)
 
-	output := Output{}
+	output := utils.Output{}
 
 	for _, parser := range parsers {
 		input := Parse(text, parser.Label, parser.Regex, 0)
@@ -47,9 +47,9 @@ func Collect(text string, parsers []utils.Parser) Output {
 
 }
 
-func Parse(text string, title string, regex []utils.Regex, num int) Output {
+func Parse(text string, title string, regex []utils.Regex, num int) utils.Output {
 
-	output := Output{}
+	output := utils.Output{}
 
 	r := regex[num].Value
 
@@ -59,14 +59,14 @@ func Parse(text string, title string, regex []utils.Regex, num int) Output {
 
 		// If there are one or more submatches in regexp
 		if len(r.SubexpNames()) > 1 {
-			values := []Tag{}
-			collection := Collection{Name: title}
+			values := []utils.Tag{}
+			collection := utils.Collection{Name: title}
 			for i := range response {
-				tags := []Tag{}
-				// Create a Tag for each submatch
+				tags := []utils.Tag{}
+				// Create a utils.Tag for each submatch
 				for j, name := range r.SubexpNames() {
 					if name != "" {
-						tag := Tag{Name: name, Value: response[i][j]}
+						tag := utils.Tag{Name: name, Value: response[i][j]}
 						tags = append(tags, tag)
 					}
 				}
