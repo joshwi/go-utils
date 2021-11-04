@@ -11,7 +11,7 @@ import (
 	"github.com/neo4j/neo4j-go-driver/neo4j"
 )
 
-func RunScript(driver neo4j.Driver, entry []parser.Tag, config parser.Config, wg *sync.WaitGroup) {
+func RunScript(driver neo4j.Driver, entry []parser.Tag, config utils.Config, wg *sync.WaitGroup) {
 
 	// Convert params from struct [][]parser.Tag -> map[string]string
 	params := map[string]string{}
@@ -58,7 +58,7 @@ func main() {
 	}
 
 	// Find parsing config requested by user
-	config := parser.Config{Name: "", Urls: []string{}, Params: []string{}, Parser: []parser.Parser{}}
+	config := utils.Config{Name: "", Urls: []string{}, Params: []string{}, Parser: []utils.Parser{}}
 
 	for _, item := range parser.CONFIG_LIST {
 		if name == item.Name {

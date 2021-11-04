@@ -2,22 +2,24 @@ package parser
 
 import (
 	"regexp"
+
+	"github.com/joshwi/go-utils/utils"
 )
 
-func Compile(parser []Parser) []Parser {
+func Compile(parser []utils.Parser) []utils.Parser {
 
 	// log.Println(`[ Function: Compile ] [ Start ]`)
 
-	output := []Parser{}
+	output := []utils.Parser{}
 
 	for _, entry := range parser {
-		tags := []Regex{}
+		tags := []utils.Regex{}
 		for _, n := range entry.Regex {
 			r := regexp.MustCompile(n.Name)
-			exp := Regex{Name: n.Name, Value: *r}
+			exp := utils.Regex{Name: n.Name, Value: *r}
 			tags = append(tags, exp)
 		}
-		parser := Parser{Label: entry.Label, Tags: entry.Tags, Regex: tags}
+		parser := utils.Parser{Label: entry.Label, Tags: entry.Tags, Regex: tags}
 		output = append(output, parser)
 	}
 
@@ -27,7 +29,7 @@ func Compile(parser []Parser) []Parser {
 
 }
 
-func Collect(text string, parsers []Parser) Output {
+func Collect(text string, parsers []utils.Parser) Output {
 
 	// log.Println(`[ Function: Collect ] [ Start ]`)
 
@@ -45,7 +47,7 @@ func Collect(text string, parsers []Parser) Output {
 
 }
 
-func Parse(text string, title string, regex []Regex, num int) Output {
+func Parse(text string, title string, regex []utils.Regex, num int) Output {
 
 	output := Output{}
 

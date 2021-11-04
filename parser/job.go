@@ -28,7 +28,7 @@ func AddParams(query map[string]string, urls []string, keys []string) []string {
 	return output
 }
 
-func RunJob(query map[string]string, urls []string, config Config) (string, string, Output) {
+func RunJob(query map[string]string, urls []string, config utils.Config) (string, string, Output) {
 
 	text := ``
 

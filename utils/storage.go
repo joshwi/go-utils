@@ -25,6 +25,7 @@ func Scan(directory string) []string {
 		fileList = append(fileList, path)
 		return nil
 	})
+
 	if err != nil {
 		log.Println(err)
 	}
