@@ -28,7 +28,7 @@ func AddParams(query map[string]string, urls []string, keys []string) []string {
 	return output
 }
 
-func RunJob(query map[string]string, urls []string, config utils.Config) (string, string, Output) {
+func RunJob(query map[string]string, urls []string, config utils.Config) (string, string, utils.Output) {
 
 	text := ``
 
@@ -44,7 +44,7 @@ func RunJob(query map[string]string, urls []string, config utils.Config) (string
 	label := ``
 	bucket := config.Name
 
-	output := Collect(text, config.Parser)
+	output := utils.Collect(text, config.Parser)
 
 	//Sort keys alphabetically
 	keys := make([]string, 0, len(query))
