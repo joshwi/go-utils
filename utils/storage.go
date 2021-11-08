@@ -7,7 +7,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 )
+
+var write_validation_1 = regexp.MustCompile(`^(\/[a-zA-Z0-9\-\_]{1,20})+$`)
+var write_validation_2 = regexp.MustCompile(`^[a-zA-Z0-9\-\_]{0,20}\.(csv|txt|json)$`)
 
 //Scan a directory for files and subfolders
 func Scan(directory string) []string {
@@ -52,5 +56,38 @@ func Read(filename string) map[string]interface{} {
 	json.Unmarshal(data, &output)
 
 	return output
+
+}
+
+//Write contents of a file
+func Write(filepath string, filename string, data string, mode int) error {
+
+	/*
+		Input:
+			(filename) string - Path of file to read
+		Output:
+			map[string]interface{} - JSON structured output
+	*/
+
+	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+
+	_, err := os.Stat(filepath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(filepath, os.FileMode(mode))
+	}
+
+	path := fmt.Sprintf("%v/%v", filepath, filename)
+
+	err = os.WriteFile(path, []byte(data), os.FileMode(mode))
+
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		log.Println(response)
+		return err
+	}
+
+	log.Println(response)
+
+	return nil
 
 }
