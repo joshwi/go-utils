@@ -59,6 +59,26 @@ func Read(filename string) map[string]interface{} {
 
 }
 
+//Read contents of a file
+func ReadTxt(filename string) string {
+
+	/*
+		Input:
+			(filename) string - Path of file to read
+		Output:
+			map[string]interface{} - JSON structured output
+	*/
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		return ``
+	}
+
+	return string(data)
+
+}
+
 //Write contents of a file
 func Write(filepath string, filename string, data string, mode int) error {
 
