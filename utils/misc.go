@@ -1,7 +1,7 @@
 package utils
 
 // difference returns the elements in `a` that aren't in `b`.
-func difference(a, b []string) []string {
+func Difference(a, b []string) []string {
 	mb := make(map[string]struct{}, len(b))
 	for _, x := range b {
 		mb[x] = struct{}{}
@@ -15,7 +15,7 @@ func difference(a, b []string) []string {
 	return diff
 }
 
-func strip(input [][]Tag) string {
+func Strip(input [][]Tag) string {
 	output := ``
 
 	for _, item := range input {
@@ -27,7 +27,7 @@ func strip(input [][]Tag) string {
 	return output
 }
 
-func rotate(input map[string][]string) [][]string {
+func Rotate(input map[string][]string) [][]string {
 
 	max := 0
 
