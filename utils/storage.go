@@ -202,6 +202,7 @@ func Unzip(src, dest string) error {
 
 	// Closure to address file descriptors issue with all the deferred .Close() methods
 	extractAndWriteFile := func(f *zip.File) error {
+
 		rc, err := f.Open()
 		if err != nil {
 			return err
@@ -212,7 +213,9 @@ func Unzip(src, dest string) error {
 			}
 		}()
 
-		path := filepath.Join(dest, f.Name)
+		filename := filepath.Base(f.Name)
+
+		path := filepath.Join(dest, filename)
 
 		// Check for ZipSlip (Directory traversal)
 		if !strings.HasPrefix(path, filepath.Clean(dest)+string(os.PathSeparator)) {
