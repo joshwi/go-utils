@@ -83,6 +83,22 @@ func ReadTxt(filename string) string {
 
 }
 
+func ReadJson(filename string) ([]byte, error) {
+	response := fmt.Sprintf(`[ Function: ReadJson ] [ File: %v ] [ Status: Success ]`, filename)
+
+	// output := [][]string{}
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: ReadJson ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filename, err)
+		log.Println(response)
+		return []byte{}, err
+	}
+
+	log.Println(response)
+	return data, nil
+}
+
 func WriteTxt(filepath string, filename string, data string, mode int) error {
 	/*
 		Input:
