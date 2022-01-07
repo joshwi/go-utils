@@ -83,6 +83,66 @@ func ReadTxt(filename string) string {
 
 }
 
+func WriteTxt(filepath string, filename string, data string, mode int) error {
+	/*
+		Input:
+			(filename) string - Path of file to read
+		Output:
+			map[string]interface{} - JSON structured output
+	*/
+
+	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+
+	_, err := os.Stat(filepath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(filepath, os.FileMode(mode))
+	}
+
+	path := fmt.Sprintf("%v/%v", filepath, filename)
+
+	err = os.WriteFile(path, []byte(data), os.FileMode(mode))
+
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		log.Println(response)
+		return err
+	}
+
+	log.Println(response)
+
+	return nil
+}
+
+func WriteJson(filepath string, filename string, data []byte, mode int) error {
+	/*
+		Input:
+			(filename) string - Path of file to read
+		Output:
+			map[string]interface{} - JSON structured output
+	*/
+
+	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+
+	_, err := os.Stat(filepath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(filepath, os.FileMode(mode))
+	}
+
+	path := fmt.Sprintf("%v/%v", filepath, filename)
+
+	err = os.WriteFile(path, data, os.FileMode(mode))
+
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		log.Println(response)
+		return err
+	}
+
+	log.Println(response)
+
+	return nil
+}
+
 //Write contents of a file
 func Write(filepath string, filename string, data string, mode int) error {
 
