@@ -5,6 +5,7 @@ import "github.com/joshwi/go-utils/utils"
 var CONFIG_LIST = []utils.Config{
 	{
 		Name:   "wiki_film",
+		Tag:    utils.Tag{Name: "wiki_film", Value: "wiki_film"},
 		Urls:   []string{"https://en.wikipedia.org/wiki/Lists_of_American_films"},
 		Params: []string{},
 		Parser: []utils.Parser{
@@ -18,6 +19,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "wiki_film_year",
+		Tag:    utils.Tag{Name: "wiki_film_year", Value: "wiki_film_year"},
 		Urls:   []string{"https://en.wikipedia.org/wiki/List_of_American_films_of_{year}"},
 		Params: []string{"year"},
 		Parser: []utils.Parser{
@@ -32,6 +34,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "wiki_movie",
+		Tag:    utils.Tag{Name: "wiki_movie", Value: "wiki_movie"},
 		Urls:   []string{"https://en.wikipedia.org{url}"},
 		Params: []string{"url"},
 		Parser: []utils.Parser{
@@ -83,6 +86,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "pfr_map_team",
+		Tag:    utils.Tag{Name: "pfr_map_team", Value: "pfr_map_team"},
 		Urls:   []string{"https://www.pro-football-reference.com/teams"},
 		Params: []string{},
 		Parser: []utils.Parser{
@@ -97,6 +101,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "pfr_map_season",
+		Tag:    utils.Tag{Name: "pfr_map_season", Value: "pfr_map_season"},
 		Urls:   []string{"https://www.pro-football-reference.com/years"},
 		Params: []string{},
 		Parser: []utils.Parser{
@@ -111,6 +116,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "pfr_map_player",
+		Tag:    utils.Tag{Name: "pfr_map_player", Value: "pfr_map_player"},
 		Urls:   []string{"https://www.pro-football-reference.com/players/{letter}"},
 		Params: []string{"letter"},
 		Parser: []utils.Parser{
@@ -125,6 +131,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "pfr_team_season",
+		Tag:    utils.Tag{Name: "pfr_team_season", Value: "pfr_team_season"},
 		Urls:   []string{"https://www.pro-football-reference.com/teams/{tag}/{year}.htm"},
 		Params: []string{"tag", "year"},
 		Parser: []utils.Parser{
@@ -204,6 +211,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "pfr_season_draft",
+		Tag:    utils.Tag{Name: "pfr_season_draft", Value: "pfr_season_draft"},
 		Urls:   []string{"https://www.pro-football-reference.com/years/{year}/draft.htm"},
 		Params: []string{"year"},
 		Parser: []utils.Parser{
@@ -218,6 +226,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "pfr_boxscore_games",
+		Tag:    utils.Tag{Name: "pfr_boxscore_games", Value: "pfr_boxscore_games"},
 		Urls:   []string{"https://www.pro-football-reference.com/boxscores/{id}.htm"},
 		Params: []string{"id"},
 		Parser: []utils.Parser{
@@ -267,6 +276,7 @@ var CONFIG_LIST = []utils.Config{
 	},
 	{
 		Name:   "genius_song_lyrics",
+		Tag:    utils.Tag{Name: "genius_song_lyrics", Value: "genius_song_lyrics"},
 		Urls:   []string{},
 		Params: []string{},
 		Parser: []utils.Parser{

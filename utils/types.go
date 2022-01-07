@@ -20,6 +20,7 @@ type Response struct {
 // Config structure containing parser and metadata
 type Config struct {
 	Name   string
+	Tag    Tag
 	Urls   []string
 	Params []string
 	Keys   []string
