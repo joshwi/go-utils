@@ -41,6 +41,31 @@ func Scan(directory string) []string {
 	return fileList
 }
 
+//Scan a directory for files and subfolders
+func DirList(directory string) []string {
+
+	/*
+		Input:
+			(directory) string - Directory to scan
+		Output:
+			[]string - List of folders and files in directory
+	*/
+
+	fileList := []string{}
+
+	err := filepath.Walk(directory, func(path string, f os.FileInfo, err error) error {
+		rel_path := strings.ReplaceAll(path, directory, "")
+		fileList = append(fileList, rel_path)
+		return nil
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+
+	return fileList
+}
+
 //Read contents of a file
 func Read(filename string) map[string]interface{} {
 
