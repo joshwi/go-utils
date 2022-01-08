@@ -66,77 +66,129 @@ func DirList(directory string) []string {
 	return fileList
 }
 
-func Copy(src, dst string) (int64, error) {
-	sourceFileStat, err := os.Stat(src)
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// Scan directories
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+//Scan a directory for files and subfolders
+func ScanDir(directory string) ([]string, error) {
+
+	/*
+		Input:
+			directory (string) - Directory to scan
+		Output:
+			([]string) - Returns list of filepaths in directory
+			(error) - Returns error, otherwise nil
+	*/
+
+	response := fmt.Sprintf(`[ Function: Scan ] [ Directory: %v ] [ Status: Success ]`, directory)
+
+	fileList := []string{}
+
+	err := filepath.Walk(directory, func(path string, f os.FileInfo, err error) error {
+		rel_path := strings.ReplaceAll(path, directory, "")
+		fileList = append(fileList, rel_path)
+		return err
+	})
+
 	if err != nil {
-		return 0, err
+		response = fmt.Sprintf(`[ Function: Scan ] [ Directory: %v ] [ Status: Failed ] [ Error: %v ]`, directory, err)
+		log.Println(response)
+		return fileList, err
 	}
 
-	if !sourceFileStat.Mode().IsRegular() {
-		return 0, fmt.Errorf("%s is not a regular file", src)
+	return fileList, nil
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// Copy directories
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+func Copy(src, dst string) (int64, error) {
+
+	/*
+		Input:
+			src (string) - Source directory to copy
+			dst (string) - Destination directory to copy to
+		Output:
+			(int64) - Returns number of bytes copied
+			(error) - Returns error, otherwise nil
+	*/
+
+	response := fmt.Sprintf(`[ Function: Copy ] [ Source: %v ] [ Destination: %v ] [ Status: Success ]`, src, dst)
+
+	_, err := os.Stat(src)
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: Copy ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dst, err)
+		log.Println(response)
+		return 0, err
 	}
 
 	source, err := os.Open(src)
 	if err != nil {
+		response = fmt.Sprintf(`[ Function: Copy ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dst, err)
+		log.Println(response)
 		return 0, err
 	}
 	defer source.Close()
 
 	destination, err := os.Create(dst)
 	if err != nil {
+		response = fmt.Sprintf(`[ Function: Copy ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dst, err)
+		log.Println(response)
 		return 0, err
 	}
 	defer destination.Close()
+
 	nBytes, err := io.Copy(destination, source)
-	return nBytes, err
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: Copy ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dst, err)
+		log.Println(response)
+		return 0, err
+	}
+	return nBytes, nil
 }
 
-//Read contents of a file
-func Read(filename string) map[string]interface{} {
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// Read files in filesystem
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+// Read contents from a TXT file
+func ReadTxt(filename string) (string, error) {
 
 	/*
 		Input:
-			(filename) string - Path of file to read
+			filename (string) - Path to the TXT file
 		Output:
-			map[string]interface{} - JSON structured output
+			(string) - Returns string data from TXT file
+			(error) - Returns error, otherwise nil
 	*/
+
+	response := fmt.Sprintf(`[ Function: ReadTxt ] [ File: %v ] [ Status: Success ]`, filename)
 
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
-		fmt.Println(err)
+		response = fmt.Sprintf(`[ Function: ReadTxt ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filename, err)
+		log.Println(response)
+		return "", err
 	}
 
-	var output map[string]interface{}
-	json.Unmarshal(data, &output)
-
-	return output
-
+	log.Println(response)
+	return string(data), nil
 }
 
-//Read contents of a file
-func ReadTxt(filename string) string {
-
-	/*
-		Input:
-			(filename) string - Path of file to read
-		Output:
-			map[string]interface{} - JSON structured output
-	*/
-
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		fmt.Println(err)
-		return ``
-	}
-
-	return string(data)
-
-}
-
+// Read contents from a JSON file
 func ReadJson(filename string) ([]byte, error) {
-	response := fmt.Sprintf(`[ Function: ReadJson ] [ File: %v ] [ Status: Success ]`, filename)
 
-	// output := [][]string{}
+	/*
+		Input:
+			filename (string) - Path to the JSON file
+		Output:
+			([]byte) - Returns byte data from JSON file
+			(error) - Returns error, otherwise nil
+	*/
+
+	response := fmt.Sprintf(`[ Function: ReadJson ] [ File: %v ] [ Status: Success ]`, filename)
 
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -149,6 +201,37 @@ func ReadJson(filename string) ([]byte, error) {
 	return data, nil
 }
 
+// Read contents of a CSV file
+func ReadCsv(filename string) ([][]string, error) {
+
+	/*
+		Input:
+			filename (string) - Path to the CSV file
+		Output:
+			([][]string) - Returns data from CSV in XY grid
+			(error) - Returns error, otherwise nil
+	*/
+
+	response := fmt.Sprintf(`[ Function: ReadCsv ] [ File: %v ] [ Status: Success ]`, filename)
+
+	csv_file, _ := os.Open(filename)
+	r := csv.NewReader(csv_file)
+	record, err := r.ReadAll()
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: ReadCsv ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filename, err)
+		log.Println(response)
+		return [][]string{}, err
+	}
+
+	return record, nil
+
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// Write to files in filesystem
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+// Write contents to a TXT file
 func WriteTxt(filepath string, filename string, data string, mode int) error {
 	/*
 		Input:
@@ -157,7 +240,7 @@ func WriteTxt(filepath string, filename string, data string, mode int) error {
 			map[string]interface{} - JSON structured output
 	*/
 
-	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+	response := fmt.Sprintf(`[ Function: Write ] [ File: %v%v ] [ Status: Success ]`, filepath, filename)
 
 	_, err := os.Stat(filepath)
 	if os.IsNotExist(err) {
@@ -169,7 +252,7 @@ func WriteTxt(filepath string, filename string, data string, mode int) error {
 	err = os.WriteFile(path, []byte(data), os.FileMode(mode))
 
 	if err != nil {
-		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		response = fmt.Sprintf(`[ Function: Write ] [ File: %v%v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
 		log.Println(response)
 		return err
 	}
@@ -179,15 +262,19 @@ func WriteTxt(filepath string, filename string, data string, mode int) error {
 	return nil
 }
 
+// Write contents to a JSON file
 func WriteJson(filepath string, filename string, data []byte, mode int) error {
 	/*
 		Input:
-			(filename) string - Path of file to read
+			filepath (string) - Path to JSON file
+			filename (string) - Name of JSON file
+			data ([][]string) - XY grid of string data to be put in JSON
+			mode (int) - File write mode
 		Output:
-			map[string]interface{} - JSON structured output
+			(error) - Returns error, otherwise nil
 	*/
 
-	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+	response := fmt.Sprintf(`[ Function: Write ] [ File: %v%v ] [ Status: Success ]`, filepath, filename)
 
 	_, err := os.Stat(filepath)
 	if os.IsNotExist(err) {
@@ -199,7 +286,7 @@ func WriteJson(filepath string, filename string, data []byte, mode int) error {
 	err = os.WriteFile(path, data, os.FileMode(mode))
 
 	if err != nil {
-		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		response = fmt.Sprintf(`[ Function: Write ] [ File: %v%v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
 		log.Println(response)
 		return err
 	}
@@ -209,78 +296,20 @@ func WriteJson(filepath string, filename string, data []byte, mode int) error {
 	return nil
 }
 
-//Write contents of a file
-func Write(filepath string, filename string, data string, mode int) error {
-
-	/*
-		Input:
-			(filename) string - Path of file to read
-		Output:
-			map[string]interface{} - JSON structured output
-	*/
-
-	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
-
-	_, err := os.Stat(filepath)
-	if os.IsNotExist(err) {
-		os.MkdirAll(filepath, os.FileMode(mode))
-	}
-
-	path := fmt.Sprintf("%v/%v", filepath, filename)
-
-	err = os.WriteFile(path, []byte(data), os.FileMode(mode))
-
-	if err != nil {
-		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
-		log.Println(response)
-		return err
-	}
-
-	log.Println(response)
-
-	return nil
-
-}
-
-//Read contents of a file
-func ReadCsv(filename string) [][]string {
-
-	/*
-		Input:
-			(filename) string - Path of file to read
-		Output:
-			map[string]interface{} - JSON structured output
-	*/
-
-	response := fmt.Sprintf(`[ Function: ReadCsv ] [ Directory: %v ] [ Status: Success ]`, filename)
-
-	output := [][]string{}
-
-	csv_file, _ := os.Open(filename)
-	r := csv.NewReader(csv_file)
-	record, err := r.ReadAll()
-	if err != nil {
-		response = fmt.Sprintf(`[ Function: ReadCsv ] [ Directory: %v ] [ Status: Failed ] [ Error: %v ]`, filename, err)
-		log.Println(response)
-		return output
-	}
-	output = record
-
-	return output
-
-}
-
-//Write contents of a file
+// Write contents of a CSV file
 func WriteCsv(filepath string, filename string, data [][]string, mode int) error {
 
 	/*
 		Input:
-			(filename) string - Path of file to read
+			filepath (string) - Path to CSV file
+			filename (string) - Name of CSV file
+			data ([][]string) - XY grid of string data to be put in CSV
+			mode (int) - File write mode
 		Output:
-			map[string]interface{} - JSON structured output
+			(error) - Returns error, otherwise nil
 	*/
 
-	response := fmt.Sprintf(`[ Function: WriteCsv ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+	response := fmt.Sprintf(`[ Function: WriteCsv ] [ File: %v%v ] [ Status: Success ]`, filepath, filename)
 
 	_, err := os.Stat(filepath)
 	if os.IsNotExist(err) {
@@ -291,7 +320,9 @@ func WriteCsv(filepath string, filename string, data [][]string, mode int) error
 
 	f, err := os.Create(path)
 	if err != nil {
-		log.Println(err)
+		response = fmt.Sprintf(`[ Function: WriteCsv ] [ File: %v%v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		log.Println(response)
+		return err
 	}
 
 	writer := csv.NewWriter(f)
@@ -299,7 +330,7 @@ func WriteCsv(filepath string, filename string, data [][]string, mode int) error
 	err = writer.WriteAll(data)
 
 	if err != nil {
-		response = fmt.Sprintf(`[ Function: WriteCsv ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		response = fmt.Sprintf(`[ Function: WriteCsv ] [ File: %v%v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
 		log.Println(response)
 		return err
 	}
@@ -309,6 +340,10 @@ func WriteCsv(filepath string, filename string, data [][]string, mode int) error
 	return nil
 
 }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+// Zip and unzip directories
+//--------------------------------------------------------------------------------------------------------------------------------------------
 
 func Unzip(src, dest string) error {
 
@@ -450,4 +485,97 @@ func addFiles(w *zip.Writer, basePath, baseInZip string) {
 			addFiles(w, newBase, baseInZip+file.Name()+"/")
 		}
 	}
+}
+
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------
+
+//Read contents of a file
+func Read(filename string) map[string]interface{} {
+
+	/*
+		Input:
+			(filename) string - Path of file to read
+		Output:
+			map[string]interface{} - JSON structured output
+	*/
+
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var output map[string]interface{}
+	json.Unmarshal(data, &output)
+
+	return output
+
+}
+
+// //Read contents of a file
+// func ReadTxt(filename string) string {
+
+// 	/*
+// 		Input:
+// 			(filename) string - Path of file to read
+// 		Output:
+// 			map[string]interface{} - JSON structured output
+// 	*/
+
+// 	data, err := ioutil.ReadFile(filename)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return ``
+// 	}
+
+// 	return string(data)
+
+// }
+
+//Write contents of a file
+func Write(filepath string, filename string, data string, mode int) error {
+
+	/*
+		Input:
+			(filename) string - Path of file to read
+		Output:
+			map[string]interface{} - JSON structured output
+	*/
+
+	response := fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Success ]`, filepath, filename)
+
+	_, err := os.Stat(filepath)
+	if os.IsNotExist(err) {
+		os.MkdirAll(filepath, os.FileMode(mode))
+	}
+
+	path := fmt.Sprintf("%v/%v", filepath, filename)
+
+	err = os.WriteFile(path, []byte(data), os.FileMode(mode))
+
+	if err != nil {
+		response = fmt.Sprintf(`[ Function: Write ] [ Directory: %v ] [ File: %v ] [ Status: Failed ] [ Error: %v ]`, filepath, filename, err)
+		log.Println(response)
+		return err
+	}
+
+	log.Println(response)
+
+	return nil
+
 }
