@@ -16,7 +16,7 @@ import (
 
 var write_validation_1 = regexp.MustCompile(`^(\/[a-zA-Z0-9\-\_]{1,20})+$`)
 var write_validation_2 = regexp.MustCompile(`^[a-zA-Z0-9\-\_]{0,20}\.(csv|txt|json)$`)
-var eof_validation = regexp.MustCompile(`(?i)(\/\w+\.\w+$)`)
+var eof_validation = regexp.MustCompile(`(?i)(\/[a-zA-Z0-9\-\_]+\.\w+$)`)
 
 //Scan a directory for files and subfolders
 func Scan(directory string) []string {
@@ -119,6 +119,8 @@ func Copy(src, dst string) (int64, error) {
 	response := fmt.Sprintf(`[ Function: Copy ] [ Source: %v ] [ Destination: %v ] [ Status: Success ]`, src, dst)
 
 	filepath := eof_validation.ReplaceAllString(dst, "")
+
+	log.Println(filepath)
 
 	_, err := os.Stat(filepath)
 	if os.IsNotExist(err) {
