@@ -120,8 +120,6 @@ func Copy(src, dst string) (int64, error) {
 
 	filepath := eof_validation.ReplaceAllString(dst, "")
 
-	log.Println(filepath)
-
 	_, err := os.Stat(filepath)
 	if os.IsNotExist(err) {
 		err := os.MkdirAll(filepath, os.FileMode(0766))
