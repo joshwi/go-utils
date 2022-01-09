@@ -146,6 +146,9 @@ func Copy(src, dst string) (int64, error) {
 		log.Println(response)
 		return 0, err
 	}
+
+	log.Println(response)
+
 	return nBytes, nil
 }
 
