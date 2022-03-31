@@ -9,7 +9,7 @@ import (
 // Response struct for HTTP Requests
 type Response struct {
 	Url    string
-	Type   string
+	Method string
 	Status int
 	Data   string
 	Error  string
