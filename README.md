@@ -1,58 +1,38 @@
 # Go Utils
 
 ## Table of contents
-* [Packages](#packages)
-* [Setup](#setup)
+* [Package](#package)
+* [Install](#install)
 
-## Packages
+## Package
 
-### Utils
+#### Functions
 
-- HTTP REST functions: GET, POST, PUT, DELETE
+- HTTP REST: GET
 
-- File storage functions: Scan, Read, Write
+- Archive: Unzip, Zip
 
-### Parser
+- File System: 
 
-- Text parsing functions: Compile, Collect
+    - Scan: Get list of files and subdirectories
+    - Read & Write: TXT, JSON, CSV
 
-### Neo4j
+- Regex Parser:
 
-- NEO4J DB functions: Connect, RunCypher
+    - Compile: Function to compile regex in config structures
+    - Collect: Runs regex parser on the string input
 
-## Setup
+#### Structures
 
-### Build Executable
+- Tag: Building block data structure for go-utils. Stores one key value pair
+
+- Collection: Struct containing two properties. Name is a string value that represents the category of the collection. Value is a 2D nested array of Tags.
+
+- Response: HTTP response structure with fields: Url, Method, Status, Data, Error
+
+## Install
 
 1. Use go package manager to get go-utils: 
 ```
-git clone https://github.com/joshwi/go-utils.git
-```
-
-2. Change directory into repo
-```
-cd go-utils
-```
-3. Create .env
-```
-nano .env
-```
-4. Paste environment variables in file
-```
-NEO4J_USERNAME=neo4j
-NEO4J_PASSWORD=password123
-NEO4J_SERVICE_HOST=localhost
-NEO4J_SERVICE_PORT=7687
-```
-5. Build go code into executable
-```
-go build -o mycollector
-```
-6. Run the collector
-
-Example: Get all games from 2020 NFL Season
-```
-./mycollector -c='pfr_map_team'
-./mycollector -c='pfr_map_season'
-./mycollector -c='pfr_team_season' -q='MATCH (n:pfr_map_team_teams),(m:pfr_map_season_years) WHERE m.year="2020" RETURN DISTINCT n.tag as tag, m.year as year'
+go get github.com/joshwi/go-utils
 ```
