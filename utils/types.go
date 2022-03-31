@@ -9,7 +9,7 @@ import (
 // Response struct for HTTP Requests
 type Response struct {
 	Url    string
-	Type   string
+	Method string
 	Status int
 	Data   string
 	Error  string
@@ -20,6 +20,7 @@ type Response struct {
 // Config structure containing parser and metadata
 type Config struct {
 	Name   string
+	Tag    Tag
 	Urls   []string
 	Params []string
 	Keys   []string

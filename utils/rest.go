@@ -6,27 +6,35 @@ import (
 	"net/http"
 )
 
-func Get(url string) Response {
+func Get(url string, headers map[string]string) (Response, error) {
 
-	errorString := ""
+	method := "GET"
 
-	resp, err := http.Get(url)
+	output := Response{Url: url, Method: method}
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	for key, value := range headers {
+		req.Header.Add(key, value)
+	}
+
+	resp, err := client.Do(req)
 
 	if err != nil {
-		errorString = string(err.Error())
-		log.Println(errorString)
-		output := Response{Url: url, Type: "GET", Status: 404, Data: "", Error: errorString}
-		return output
+		output = Response{Url: url, Method: "GET", Status: 404, Data: "", Error: string(err.Error())}
+		log.Println(err)
+		return output, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		errorString = string(err.Error())
-		log.Println(errorString)
+		log.Println(err)
+		return output, err
 	}
 
-	output := Response{Url: url, Type: "GET", Status: resp.StatusCode, Data: string(body), Error: errorString}
+	output = Response{Url: url, Method: method, Status: resp.StatusCode, Data: string(body)}
 
-	return output
+	return output, nil
 }

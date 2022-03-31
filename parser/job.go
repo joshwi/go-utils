@@ -34,7 +34,7 @@ func RunJob(query map[string]string, urls []string, config utils.Config) (string
 
 	for _, url := range urls {
 
-		response := utils.Get(url)
+		response, _ := utils.Get(url, map[string]string{})
 		if response.Status == 200 {
 			text = response.Data
 			break
