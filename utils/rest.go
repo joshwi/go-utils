@@ -2,8 +2,9 @@ package utils
 
 import (
 	"io/ioutil"
-	"log"
 	"net/http"
+
+	"github.com/joshwi/go-utils/logger"
 )
 
 func Get(url string, headers map[string]string) (Response, error) {
@@ -22,19 +23,21 @@ func Get(url string, headers map[string]string) (Response, error) {
 	resp, err := client.Do(req)
 
 	if err != nil {
-		output = Response{Url: url, Method: "GET", Status: 404, Data: "", Error: string(err.Error())}
-		log.Println(err)
+		output = Response{Url: url, Method: method, Status: 404, Data: "", Error: string(err.Error())}
+		logger.Logger.Error().Str("url", url).Str("method", method).Int("status", 404).Err(err).Msg("GET")
 		return output, err
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		log.Println(err)
+		logger.Logger.Error().Str("url", url).Str("method", method).Int("status", resp.StatusCode).Err(err).Msg("HTTP")
 		return output, err
 	}
 
 	output = Response{Url: url, Method: method, Status: resp.StatusCode, Data: string(body)}
+
+	logger.Logger.Info().Str("url", url).Str("method", method).Int("status", resp.StatusCode).Msg("HTTP")
 
 	return output, nil
 }
