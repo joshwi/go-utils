@@ -56,7 +56,21 @@ func Read(filename string) ([]byte, error) {
 //Write contents to a file
 func Write(filename string, data []byte, mode int) error {
 
-	err := ioutil.WriteFile(filename, data, os.FileMode(mode))
+	_, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		err = os.MkdirAll(filepath.Dir(filename), 0755)
+		if err != nil {
+			logger.Logger.Error().Str("file", filename).Str("status", "Failed").Err(err).Msg("Write")
+			return err
+		}
+		_, err = os.Create(filename)
+		if err != nil {
+			logger.Logger.Error().Str("file", filename).Str("status", "Failed").Err(err).Msg("Write")
+			return err
+		}
+	}
+
+	err = ioutil.WriteFile(filename, data, os.FileMode(mode))
 	if err != nil {
 		logger.Logger.Error().Str("file", filename).Str("status", "Failed").Err(err).Msg("Write")
 		return err
