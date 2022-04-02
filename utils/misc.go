@@ -1,5 +1,9 @@
 package utils
 
+import (
+	"strings"
+)
+
 // difference returns the elements in `a` that aren't in `b`.
 func Difference(a, b []string) []string {
 	mb := make(map[string]struct{}, len(b))
@@ -23,6 +27,8 @@ func Strip(input [][]Tag) string {
 			output = output + elem.Value + "\n"
 		}
 	}
+
+	output = strings.TrimSpace(output)
 
 	return output
 }
