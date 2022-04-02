@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/joshwi/go-utils/logger"
 )
 
 func Unzip(src, dest string) error {
-
-	response := fmt.Sprintf(`[ Function: Unzip ] [ Source: %v ] [ Destination: %v ] [ Status: Success ]`, src, dest)
 
 	r, err := zip.OpenReader(src)
 	if err != nil {
@@ -74,18 +73,17 @@ func Unzip(src, dest string) error {
 	for _, f := range r.File {
 		err := extractAndWriteFile(f)
 		if err != nil {
-			response = fmt.Sprintf(`[ Function: Unzip ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dest, err)
-			log.Println(response)
+			logger.Logger.Error().Str("source", src).Str("destination", dest).Str("status", "failed").Err(err).Msg("Unzip")
 			return err
 		}
 	}
+
+	logger.Logger.Info().Str("source", src).Str("destination", dest).Str("status", "success").Msg("Unzip")
 
 	return nil
 }
 
 func Zip(src, dest string) error {
-
-	response := fmt.Sprintf(`[ Function: Zip ] [ Source: %v ] [ Destination: %v ] [ Status: Success ]`, src, dest)
 
 	// Get a Buffer to Write To
 	outFile, err := os.Create(dest)
@@ -101,18 +99,18 @@ func Zip(src, dest string) error {
 	addFiles(w, src, "")
 
 	if err != nil {
-		response = fmt.Sprintf(`[ Function: Zip ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dest, err)
-		log.Println(response)
+		logger.Logger.Error().Str("source", src).Str("destination", dest).Str("status", "failed").Err(err).Msg("Zip")
 		return err
 	}
 
 	// Make sure to check the error on Close.
 	err = w.Close()
 	if err != nil {
-		response = fmt.Sprintf(`[ Function: Zip ] [ Source: %v ] [ Destination: %v ] [ Status: Failed ] [ Error: %v ]`, src, dest, err)
-		log.Println(response)
+		logger.Logger.Error().Str("source", src).Str("destination", dest).Str("status", "failed").Err(err).Msg("Zip")
 		return err
 	}
+
+	logger.Logger.Info().Str("source", src).Str("destination", dest).Str("status", "success").Msg("Zip")
 
 	return nil
 }
