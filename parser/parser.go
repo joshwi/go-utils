@@ -1,10 +1,38 @@
 package parser
 
 import (
+	"encoding/json"
 	"regexp"
 
 	"github.com/joshwi/go-utils/utils"
 )
+
+func Init(name string, file string) (utils.Config, error) {
+
+	config := utils.Config{Name: "", Urls: []string{}, Params: []string{}, Parser: []utils.Parser{}}
+
+	// Open file with parsing configurations
+	fileBytes, err := utils.Read(file)
+	if err != nil {
+		return config, err
+	}
+
+	// Unmarshall file into []Config struct
+	var configurations []utils.Config
+	json.Unmarshal(fileBytes, &configurations)
+
+	// Find parsing config given in script args
+	for _, item := range configurations {
+		if name == item.Name {
+			config = item
+		}
+	}
+
+	// Compile parser config into regexp
+	config.Parser = Compile(config.Parser)
+
+	return config, nil
+}
 
 func Compile(parser []utils.Parser) []utils.Parser {
 
